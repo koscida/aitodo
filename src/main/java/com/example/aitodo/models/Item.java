@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 public class Item {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "item_id")
 	private long itemId;
 
@@ -29,6 +29,17 @@ public class Item {
 
 	@Column(name = "is_complete")
 	private boolean isComplete;
+
+	public Item() {
+	}
+
+	public Item(long itemId, long listId, String itemDescription, Date dueDate, boolean isComplete) {
+		this.itemId = itemId;
+		this.listId = listId;
+		this.itemDescription = itemDescription;
+		this.dueDate = dueDate;
+		this.isComplete = isComplete;
+	}
 
 	public long getItemId() {
 		return this.itemId;
@@ -77,11 +88,11 @@ public class Item {
 	@Override
 	public String toString() {
 		return "Item {" +
-				" item_id: " + itemId +
-				" list_id: " + listId +
-				" item_description: " + itemDescription +
-				" due_date: " + dueDate +
-				" is_complete: " + isComplete +
+				" itemId: " + itemId +
+				" listId: " + listId +
+				" itemDescription: " + itemDescription +
+				" dueDate: " + dueDate +
+				" isComplete: " + isComplete +
 				"}";
 	}
 

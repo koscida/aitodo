@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 public class ToDoList {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "list_id")
 	private long listId;
 
@@ -24,6 +24,16 @@ public class ToDoList {
 
 	@Column(name = "is_complete")
 	private boolean isComplete;
+
+	public ToDoList() {
+	}
+
+	public ToDoList(long listId, long userId, String listName, boolean isComplete) {
+		this.listId = listId;
+		this.userId = userId;
+		this.listName = listName;
+		this.isComplete = isComplete;
+	}
 
 	public long getListId() {
 		return this.listId;

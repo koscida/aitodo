@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.aitodo.models.Item;
@@ -34,6 +36,20 @@ public class WebService {
 
 	public List<User> getAllUsers() {
 		return this.userRepository.findAll();
+	}
+
+	public User getUserById(long userId) {
+		Optional<User> userOptional = this.userRepository.findById(userId);
+		User user = userOptional.orElse(null);
+		return user;
+	}
+
+	public User getUserByEmail(String email) {
+		return this.userRepository.findByEmail(email);
+	}
+
+	public User createNewUser(User user) {
+		return this.userRepository.save(user);
 	}
 
 	// lists
