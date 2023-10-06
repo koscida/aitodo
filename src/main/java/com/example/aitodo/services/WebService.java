@@ -52,6 +52,10 @@ public class WebService {
 		return this.userRepository.save(user);
 	}
 
+	public User updateUser(User user) {
+		return this.userRepository.save(user);
+	}
+
 	// lists
 
 	public List<ToDoList> getAllLists() {

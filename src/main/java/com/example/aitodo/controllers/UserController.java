@@ -6,9 +6,11 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,8 +60,6 @@ public class UserController {
 
 	@PostMapping("")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
-		System.out.println("--User--");
-		System.out.println(user);
 		try {
 			User _user = this.webService.createNewUser(
 					new User(user.getDisplayName(), user.getEmail(), user.getGoogleId()));
@@ -67,7 +67,24 @@ public class UserController {
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<User> updateUser(@PathVariable("id") long userId, @RequestBody User userEdits) {
+		User user = this.webService.getUserById(userId);
+
+		if (user == null) {
+			return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+		} else {
+			user.setDisplayName(userEdits.getDisplayName());
+			user.setEmail(userEdits.getEmail());
+			user.setGoogleId(userEdits.getGoogleId());
+			return new ResponseEntity<>(this.webService.updateUser(user), HttpStatus.OK);
+		}
+	}
+
+	// @DeleteMapping("")
+
+	// @DeleteMapping("/{id}")
 
 }
