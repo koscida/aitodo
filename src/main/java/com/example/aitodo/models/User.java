@@ -33,6 +33,9 @@ public class User {
 	@Column(name = "google_id")
 	private String googleId;
 
+	@Column(name = "is_deleted")
+	private boolean isDeleted;
+
 	@JsonManagedReference
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private List<ToDoList> toDoLists = new ArrayList<>();
@@ -40,10 +43,11 @@ public class User {
 	public User() {
 	}
 
-	public User(String displayName, String email, String googleId) {
+	public User(String displayName, String email, String googleId, boolean isDeleted) {
 		this.displayName = displayName;
 		this.email = email;
 		this.googleId = googleId;
+		this.isDeleted = isDeleted;
 	}
 
 	public long getUserId() {
@@ -86,6 +90,14 @@ public class User {
 		this.toDoLists = toDoLists;
 	}
 
+	public boolean getIsDeleted() {
+		return this.isDeleted;
+	}
+
+	public void setIsDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
 		return "User {" +
@@ -94,6 +106,7 @@ public class User {
 				" email: " + email +
 				" googleId: " + googleId +
 				" toDoLists: " + toDoLists +
+				" isDeleted: " + isDeleted +
 				"}";
 	}
 

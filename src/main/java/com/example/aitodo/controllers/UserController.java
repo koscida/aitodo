@@ -61,9 +61,8 @@ public class UserController {
 	@PostMapping("")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		try {
-			User _user = this.webService.createNewUser(
-					new User(user.getDisplayName(), user.getEmail(), user.getGoogleId()));
-			return new ResponseEntity<>(_user, HttpStatus.CREATED);
+			User newUser = this.webService.createNewUser(user);
+			return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

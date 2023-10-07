@@ -39,18 +39,21 @@ public class ToDoList {
 	@Column(name = "is_complete")
 	private boolean isComplete;
 
+	@Column(name = "is_deleted")
+	private boolean isDeleted;
+
 	@JsonManagedReference
-	// @OneToMany(mappedBy = "toDoList", fetch = FetchType.EAGER)
 	@OneToMany(mappedBy = "toDoList", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<Item> items = new ArrayList();
 
 	public ToDoList() {
 	}
 
-	public ToDoList(User user, String listName, boolean isComplete) {
+	public ToDoList(User user, String listName, boolean isComplete, boolean isDeleted) {
 		this.user = user;
 		this.listName = listName;
 		this.isComplete = isComplete;
+		this.isDeleted = isDeleted;
 	}
 
 	public long getListId() {
@@ -97,6 +100,14 @@ public class ToDoList {
 		this.items = items;
 	}
 
+	public boolean getIsDeleted() {
+		return this.isDeleted;
+	}
+
+	public void setIsDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
 		return "ToDoList {" +
@@ -105,6 +116,7 @@ public class ToDoList {
 				" listName: " + listName +
 				" isComplete: " + isComplete +
 				" items: " + items +
+				" isDeleted: " + isDeleted +
 				"}";
 	}
 

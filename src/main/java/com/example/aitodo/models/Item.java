@@ -26,13 +26,9 @@ public class Item {
 	private long itemId;
 
 	@JsonBackReference
-	// @ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@ManyToOne
 	@JoinColumn(name = "LIST_ID", nullable = false)
 	private ToDoList toDoList;
-
-	// @Column(name = "list_id")
-	// private long listId;
 
 	@Column(name = "item_order")
 	private int itemOrder;
@@ -46,26 +42,21 @@ public class Item {
 	@Column(name = "is_complete")
 	private boolean isComplete;
 
+	@Column(name = "is_deleted")
+	private boolean isDeleted;
+
 	public Item() {
 	}
 
 	public Item(ToDoList toDoList, int itemOrder, String itemDescription, Date dueDate,
-			boolean isComplete) {
+			boolean isComplete, boolean isDeleted) {
 		this.toDoList = toDoList;
 		this.itemOrder = itemOrder;
 		this.itemDescription = itemDescription;
 		this.dueDate = dueDate;
 		this.isComplete = isComplete;
+		this.isDeleted = isDeleted;
 	}
-
-	// public Item(long listId, int itemOrder, String itemDescription, Date dueDate,
-	// boolean isComplete) {
-	// this.listId = listId;
-	// this.itemOrder = itemOrder;
-	// this.itemDescription = itemDescription;
-	// this.dueDate = dueDate;
-	// this.isComplete = isComplete;
-	// }
 
 	public long getItemId() {
 		return this.itemId;
@@ -82,14 +73,6 @@ public class Item {
 	public void setToDoList(ToDoList toDoList) {
 		this.toDoList = toDoList;
 	}
-
-	// public long getListId() {
-	// return this.listId;
-	// }
-
-	// public void setListId(long listId) {
-	// this.listId = listId;
-	// }
 
 	public int getItemOrder() {
 		return this.itemOrder;
@@ -127,6 +110,18 @@ public class Item {
 		this.isComplete = isComplete;
 	}
 
+	public boolean isIsDeleted() {
+		return this.isDeleted;
+	}
+
+	public boolean getIsDeleted() {
+		return this.isDeleted;
+	}
+
+	public void setIsDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
 		return "Item {" +
@@ -136,6 +131,7 @@ public class Item {
 				" itemDescription: " + itemDescription +
 				" dueDate: " + dueDate +
 				" isComplete: " + isComplete +
+				" isDeleted: " + isDeleted +
 				"}";
 	}
 

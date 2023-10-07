@@ -36,7 +36,7 @@ public class WebService {
 	// users
 
 	public List<User> getAllUsers() {
-		return this.userRepository.findAll();
+		return this.userRepository.findAllByIsDeleted(false);
 	}
 
 	public User getUserById(long userId) {
@@ -108,28 +108,50 @@ public class WebService {
 		return this.itemRepository.findAll();
 	}
 
-	public List<Item> getListItems(long listId) {
-		return new ArrayList<>();
-		// return this.itemRepository.findAllByListId(listId);
+	public Item getItemById(long itemId) {
+		Optional<Item> itemOptional = this.itemRepository.findById(itemId);
+		return itemOptional.orElse(null);
 	}
+
+	public Item createNewItem(ToDoList toDoList, Item item) {
+		item.setToDoList(toDoList);
+		return this.itemRepository.save(item);
+	}
+
+	public Item updateItem(Item updatingItem, Item itemEdits) {
+		updatingItem.setItemOrder(itemEdits.getItemOrder());
+		updatingItem.setItemDescription(itemEdits.getItemDescription());
+		updatingItem.setDueDate(itemEdits.getDueDate());
+		updatingItem.setIsComplete(itemEdits.isIsComplete());
+		return this.itemRepository.save(updatingItem);
+	}
+
+	public void deleteItemById(long itemId) {
+		this.itemRepository.deleteById(itemId);
+	}
+
+	// public List<Item> getListItems(long listId) {
+	// return new ArrayList<>();
+	// // return this.itemRepository.findAllByListId(listId);
+	// }
 
 	// ////
 	// dto object
 
-	public ListItem getListItem(long listId) {
-		// get the list
-		ToDoList toDoList = this.getListById(listId);
+	// public ListItem getListItem(long listId) {
+	// // get the list
+	// ToDoList toDoList = this.getListById(listId);
 
-		// get the items
-		List<Item> items = this.getListItems(listId);
+	// // get the items
+	// List<Item> items = this.getListItems(listId);
 
-		// create dto listitem
-		ListItem listItem = new ListItem();
-		listItem.setTodoList(toDoList);
-		listItem.setItems(items);
+	// // create dto listitem
+	// ListItem listItem = new ListItem();
+	// listItem.setTodoList(toDoList);
+	// listItem.setItems(items);
 
-		return listItem;
-	}
+	// return listItem;
+	// }
 
 	// public List<ListItem> getUserListItems(int userId) {
 	// // get the lists
