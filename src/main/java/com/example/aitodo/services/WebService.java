@@ -32,6 +32,7 @@ public class WebService {
 	// ////
 	// single entities
 
+	//
 	// users
 
 	public List<User> getAllUsers() {
@@ -52,26 +53,55 @@ public class WebService {
 		return this.userRepository.save(user);
 	}
 
-	public User updateUser(User user) {
-		return this.userRepository.save(user);
+	public User updateUser(User userUpdating, User userEdits) {
+		userUpdating.setDisplayName(userEdits.getDisplayName());
+		userUpdating.setEmail(userEdits.getEmail());
+		userUpdating.setGoogleId(userEdits.getGoogleId());
+		return this.userRepository.save(userUpdating);
 	}
 
+	// public void deleteAllUsers() {
+	// this.userRepository.deleteAll();
+	// }
+
+	public void deleteUser(long userId) {
+		this.userRepository.deleteById(userId);
+	}
+
+	//
 	// lists
 
 	public List<ToDoList> getAllLists() {
 		return this.toDoListRepository.findAll();
 	}
 
-	public List<ToDoList> getUserLists(long userId) {
-		return this.toDoListRepository.findAllByUserId(userId);
-	}
-
-	public ToDoList getList(long listId) {
+	public ToDoList getListById(long listId) {
 		Optional<ToDoList> toDoListOptional = this.toDoListRepository.findById(listId);
 		ToDoList toDoList = toDoListOptional.orElse(null);
 		return toDoList;
 	}
 
+	// public List<ToDoList> getUserLists(long listId) {
+
+	// return this.toDoListRepository.findAllByUser(listId);
+	// }
+
+	public ToDoList createNewList(User user, ToDoList listId) {
+		listId.setUser(user);
+		return this.toDoListRepository.save(listId);
+	}
+
+	public ToDoList updateList(ToDoList toDoListUpdating, ToDoList toDoListEdits) {
+		toDoListUpdating.setListName(toDoListEdits.getListName());
+		toDoListUpdating.setIsComplete(toDoListEdits.getIsComplete());
+		return this.toDoListRepository.save(toDoListUpdating);
+	}
+
+	public void deleteList(long listId) {
+		this.toDoListRepository.deleteById(listId);
+	}
+
+	//
 	// items
 
 	public List<Item> getAllItems() {
@@ -79,7 +109,8 @@ public class WebService {
 	}
 
 	public List<Item> getListItems(long listId) {
-		return this.itemRepository.findAllByListId(listId);
+		return new ArrayList<>();
+		// return this.itemRepository.findAllByListId(listId);
 	}
 
 	// ////
@@ -87,7 +118,7 @@ public class WebService {
 
 	public ListItem getListItem(long listId) {
 		// get the list
-		ToDoList toDoList = this.getList(listId);
+		ToDoList toDoList = this.getListById(listId);
 
 		// get the items
 		List<Item> items = this.getListItems(listId);
@@ -100,19 +131,19 @@ public class WebService {
 		return listItem;
 	}
 
-	public List<ListItem> getUserListItems(int userId) {
-		// get the lists
-		List<ToDoList> toDoLists = this.getUserLists(userId);
+	// public List<ListItem> getUserListItems(int userId) {
+	// // get the lists
+	// List<ToDoList> toDoLists = this.getUserLists(userId);
 
-		// create dto listitem
-		List<ListItem> listItems = new ArrayList<>();
+	// // create dto listitem
+	// List<ListItem> listItems = new ArrayList<>();
 
-		for (ToDoList toDoList : toDoLists) {
-			listItems.add(this.getListItem(toDoList.getListId()));
-		}
-		;
+	// for (ToDoList toDoList : toDoLists) {
+	// listItems.add(this.getListItem(toDoList.getListId()));
+	// }
+	// ;
 
-		return listItems;
-	}
+	// return listItems;
+	// }
 
 }

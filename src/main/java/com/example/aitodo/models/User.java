@@ -1,10 +1,18 @@
 package com.example.aitodo.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,9 +33,9 @@ public class User {
 	@Column(name = "google_id")
 	private String googleId;
 
-	public long getUserId() {
-		return this.userId;
-	}
+	@JsonManagedReference
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	private List<ToDoList> toDoLists = new ArrayList<>();
 
 	public User() {
 	}
@@ -36,6 +44,10 @@ public class User {
 		this.displayName = displayName;
 		this.email = email;
 		this.googleId = googleId;
+	}
+
+	public long getUserId() {
+		return this.userId;
 	}
 
 	public void setUserId(long userId) {
@@ -66,6 +78,14 @@ public class User {
 		this.googleId = googleId;
 	}
 
+	public List<ToDoList> getToDoLists() {
+		return this.toDoLists;
+	}
+
+	public void setToDoLists(List<ToDoList> toDoLists) {
+		this.toDoLists = toDoLists;
+	}
+
 	@Override
 	public String toString() {
 		return "User {" +
@@ -73,6 +93,7 @@ public class User {
 				" displayName: " + displayName +
 				" email: " + email +
 				" googleId: " + googleId +
+				" toDoLists: " + toDoLists +
 				"}";
 	}
 

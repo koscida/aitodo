@@ -1,10 +1,22 @@
 package com.example.aitodo.models;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,8 +28,10 @@ public class ToDoList {
 	@Column(name = "list_id")
 	private long listId;
 
-	@Column(name = "user_id")
-	private long userId;
+	@JsonBackReference
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
 	@Column(name = "list_name")
 	private String listName;
@@ -25,12 +39,16 @@ public class ToDoList {
 	@Column(name = "is_complete")
 	private boolean isComplete;
 
+	@JsonManagedReference
+	// @OneToMany(mappedBy = "toDoList", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "toDoList", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<Item> items = new ArrayList();
+
 	public ToDoList() {
 	}
 
-	public ToDoList(long listId, long userId, String listName, boolean isComplete) {
-		this.listId = listId;
-		this.userId = userId;
+	public ToDoList(User user, String listName, boolean isComplete) {
+		this.user = user;
 		this.listName = listName;
 		this.isComplete = isComplete;
 	}
@@ -43,12 +61,12 @@ public class ToDoList {
 		this.listId = listId;
 	}
 
-	public long getUserId() {
-		return this.userId;
+	public User getUser() {
+		return this.user;
 	}
 
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public String getListName() {
@@ -71,13 +89,22 @@ public class ToDoList {
 		this.isComplete = isComplete;
 	}
 
+	public List<Item> getItems() {
+		return this.items;
+	}
+
+	public void setItems(List<Item> items) {
+		this.items = items;
+	}
+
 	@Override
 	public String toString() {
 		return "ToDoList {" +
 				" listId: " + listId +
-				" userId: " + userId +
+				" userId: " + user.getUserId() +
 				" listName: " + listName +
 				" isComplete: " + isComplete +
+				" items: " + items +
 				"}";
 	}
 

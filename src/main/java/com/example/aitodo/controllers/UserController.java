@@ -71,20 +71,40 @@ public class UserController {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable("id") long userId, @RequestBody User userEdits) {
-		User user = this.webService.getUserById(userId);
+		User userUpdating = this.webService.getUserById(userId);
 
-		if (user == null) {
-			return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+		if (userUpdating == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} else {
-			user.setDisplayName(userEdits.getDisplayName());
-			user.setEmail(userEdits.getEmail());
-			user.setGoogleId(userEdits.getGoogleId());
-			return new ResponseEntity<>(this.webService.updateUser(user), HttpStatus.OK);
+			return new ResponseEntity<>(this.webService.updateUser(userUpdating, userEdits), HttpStatus.OK);
 		}
 	}
 
+	// Remove Delete All because pre-populated db
 	// @DeleteMapping("")
+	// public ResponseEntity<HttpStatus> deleteUsers() {
+	// try {
+	// this.webService.deleteAllUsers();
+	// return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	// } catch (Exception e) {
+	// return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	// }
+	// }
 
-	// @DeleteMapping("/{id}")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") long userId) {
+		try {
+			User user = this.webService.getUserById(userId);
+
+			if (user == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else {
+				this.webService.deleteUser(userId);
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }

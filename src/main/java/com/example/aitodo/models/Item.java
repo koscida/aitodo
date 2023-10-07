@@ -2,11 +2,18 @@ package com.example.aitodo.models;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,8 +25,17 @@ public class Item {
 	@Column(name = "item_id")
 	private long itemId;
 
-	@Column(name = "list_id")
-	private long listId;
+	@JsonBackReference
+	// @ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@ManyToOne
+	@JoinColumn(name = "LIST_ID", nullable = false)
+	private ToDoList toDoList;
+
+	// @Column(name = "list_id")
+	// private long listId;
+
+	@Column(name = "item_order")
+	private int itemOrder;
 
 	@Column(name = "item_description")
 	private String itemDescription;
@@ -33,13 +49,23 @@ public class Item {
 	public Item() {
 	}
 
-	public Item(long itemId, long listId, String itemDescription, Date dueDate, boolean isComplete) {
-		this.itemId = itemId;
-		this.listId = listId;
+	public Item(ToDoList toDoList, int itemOrder, String itemDescription, Date dueDate,
+			boolean isComplete) {
+		this.toDoList = toDoList;
+		this.itemOrder = itemOrder;
 		this.itemDescription = itemDescription;
 		this.dueDate = dueDate;
 		this.isComplete = isComplete;
 	}
+
+	// public Item(long listId, int itemOrder, String itemDescription, Date dueDate,
+	// boolean isComplete) {
+	// this.listId = listId;
+	// this.itemOrder = itemOrder;
+	// this.itemDescription = itemDescription;
+	// this.dueDate = dueDate;
+	// this.isComplete = isComplete;
+	// }
 
 	public long getItemId() {
 		return this.itemId;
@@ -49,12 +75,28 @@ public class Item {
 		this.itemId = itemId;
 	}
 
-	public long getListId() {
-		return this.listId;
+	public ToDoList getToDoList() {
+		return this.toDoList;
 	}
 
-	public void setListId(long listId) {
-		this.listId = listId;
+	public void setToDoList(ToDoList toDoList) {
+		this.toDoList = toDoList;
+	}
+
+	// public long getListId() {
+	// return this.listId;
+	// }
+
+	// public void setListId(long listId) {
+	// this.listId = listId;
+	// }
+
+	public int getItemOrder() {
+		return this.itemOrder;
+	}
+
+	public void setItemOrder(int itemOrder) {
+		this.itemOrder = itemOrder;
 	}
 
 	public String getItemDescription() {
@@ -89,7 +131,8 @@ public class Item {
 	public String toString() {
 		return "Item {" +
 				" itemId: " + itemId +
-				" listId: " + listId +
+				" listId: " + toDoList.getListId() +
+				" itemOrder: " + itemOrder +
 				" itemDescription: " + itemDescription +
 				" dueDate: " + dueDate +
 				" isComplete: " + isComplete +

@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ToDoListRepository extends JpaRepository<ToDoList, Long> {
 
-	public List<ToDoList> findAllByUserId(long userId);
+	// public List<ToDoList> findAllByUser(User user);
 }
