@@ -90,7 +90,7 @@ public class ItemController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		else {
 			try {
-				this.webService.deleteItemById(itemId);
+				this.webService.deleteItem(item);
 				return new ResponseEntity<>(HttpStatus.OK);
 
 			} catch (Exception e) {

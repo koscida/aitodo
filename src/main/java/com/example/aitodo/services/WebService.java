@@ -40,9 +40,7 @@ public class WebService {
 	}
 
 	public User getUserById(long userId) {
-		Optional<User> userOptional = this.userRepository.findById(userId);
-		User user = userOptional.orElse(null);
-		return user;
+		return this.userRepository.findByUserIdAndIsDeleted(userId, false);
 	}
 
 	public User getUserByEmail(String email) {
@@ -60,31 +58,22 @@ public class WebService {
 		return this.userRepository.save(userUpdating);
 	}
 
-	// public void deleteAllUsers() {
-	// this.userRepository.deleteAll();
-	// }
-
-	public void deleteUser(long userId) {
-		this.userRepository.deleteById(userId);
+	public void deleteUser(User user) {
+		user.setIsDeleted(true);
+		this.userRepository.save(user);
+		// this.userRepository.deleteById(userId);
 	}
 
 	//
 	// lists
 
 	public List<ToDoList> getAllLists() {
-		return this.toDoListRepository.findAll();
+		return this.toDoListRepository.findAllByIsDeleted(false);
 	}
 
 	public ToDoList getListById(long listId) {
-		Optional<ToDoList> toDoListOptional = this.toDoListRepository.findById(listId);
-		ToDoList toDoList = toDoListOptional.orElse(null);
-		return toDoList;
+		return this.toDoListRepository.findByListIdAndIsDeleted(listId, false);
 	}
-
-	// public List<ToDoList> getUserLists(long listId) {
-
-	// return this.toDoListRepository.findAllByUser(listId);
-	// }
 
 	public ToDoList createNewList(User user, ToDoList listId) {
 		listId.setUser(user);
@@ -97,20 +86,21 @@ public class WebService {
 		return this.toDoListRepository.save(toDoListUpdating);
 	}
 
-	public void deleteList(long listId) {
-		this.toDoListRepository.deleteById(listId);
+	public void deleteList(ToDoList list) {
+		list.setIsDeleted(true);
+		this.toDoListRepository.save(list);
+		// this.toDoListRepository.deleteById(listId);
 	}
 
 	//
 	// items
 
 	public List<Item> getAllItems() {
-		return this.itemRepository.findAll();
+		return this.itemRepository.findAllByIsDeleted(false);
 	}
 
 	public Item getItemById(long itemId) {
-		Optional<Item> itemOptional = this.itemRepository.findById(itemId);
-		return itemOptional.orElse(null);
+		return this.itemRepository.findByItemIdAndIsDeleted(itemId, false);
 	}
 
 	public Item createNewItem(ToDoList toDoList, Item item) {
@@ -126,8 +116,10 @@ public class WebService {
 		return this.itemRepository.save(updatingItem);
 	}
 
-	public void deleteItemById(long itemId) {
-		this.itemRepository.deleteById(itemId);
+	public void deleteItem(Item item) {
+		item.setIsDeleted(true);
+		this.itemRepository.save(item);
+		// this.itemRepository.deleteById(itemId);
 	}
 
 	// public List<Item> getListItems(long listId) {

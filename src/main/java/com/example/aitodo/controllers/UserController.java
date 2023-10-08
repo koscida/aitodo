@@ -79,17 +79,6 @@ public class UserController {
 		}
 	}
 
-	// Remove Delete All because pre-populated db
-	// @DeleteMapping("")
-	// public ResponseEntity<HttpStatus> deleteUsers() {
-	// try {
-	// this.webService.deleteAllUsers();
-	// return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-	// } catch (Exception e) {
-	// return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	// }
-	// }
-
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") long userId) {
 		try {
@@ -98,8 +87,8 @@ public class UserController {
 			if (user == null) {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			} else {
-				this.webService.deleteUser(userId);
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+				this.webService.deleteUser(user);
+				return new ResponseEntity<>(HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

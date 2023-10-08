@@ -81,7 +81,7 @@ public class ListController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		else {
 			try {
-				this.webService.deleteList(listId);
+				this.webService.deleteList(toDoList);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (Exception e) {
 				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

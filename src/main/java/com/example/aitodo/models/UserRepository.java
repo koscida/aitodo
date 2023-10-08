@@ -8,8 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-	User findByEmail(String email);
+	public User findByEmail(String email);
 
-	List<User> findAllByIsDeleted(boolean isDeleted);
+	public List<User> findAllByIsDeleted(boolean isDeleted);
+
+	public User findByUserIdAndIsDeleted(long userId, boolean isDeleted);
 
 }
