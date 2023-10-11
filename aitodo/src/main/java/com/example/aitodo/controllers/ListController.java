@@ -1,5 +1,6 @@
 package com.example.aitodo.controllers;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.aitodo.models.Item;
 import com.example.aitodo.models.ToDoList;
 import com.example.aitodo.models.User;
 import com.example.aitodo.services.ListItem;
@@ -32,6 +34,9 @@ public class ListController {
 		this.webService = webService;
 	}
 
+	// ////
+	// GET
+
 	@GetMapping("")
 	public ResponseEntity<List<ToDoList>> getLists() {
 		try {
@@ -44,14 +49,45 @@ public class ListController {
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ToDoList> getList(@PathVariable("id") long listId) {
-		ToDoList toDoList = this.webService.getListById(listId);
-
-		if (toDoList == null) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} else {
-			return new ResponseEntity<>(toDoList, HttpStatus.OK);
+		try {
+			ToDoList toDoList = this.webService.getListById(listId);
+			if (toDoList == null)
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			else
+				return new ResponseEntity<>(toDoList, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@GetMapping("/{id}/lastUpdate")
+	public ResponseEntity<Timestamp> getListUpdateLast(@PathVariable("id") long listId) {
+		try {
+			ToDoList toDoList = this.webService.getListById(listId);
+			if (toDoList == null)
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			else
+				return new ResponseEntity<>(toDoList.getLastUpdate(), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/{id}/items")
+	public ResponseEntity<List<Item>> getListItems(@PathVariable("id") long listId) {
+		try {
+			ToDoList toDoList = this.webService.getListById(listId);
+			if (toDoList == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else
+				return new ResponseEntity<>(toDoList.getItems(), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// ////
+	// POST
 
 	@PostMapping("")
 	public ResponseEntity<ToDoList> createList(@RequestBody ToDoList toDoList) {
@@ -64,28 +100,42 @@ public class ListController {
 		}
 	}
 
+	// ////
+	// PUT
+
 	@PutMapping("/{id}")
 	public ResponseEntity<ToDoList> updateList(@PathVariable("id") long listId, @RequestBody ToDoList toDoListEdits) {
-		ToDoList toDoListUpdating = this.webService.getListById(listId);
-		if (toDoListUpdating == null)
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		else {
-			return new ResponseEntity<>(this.webService.updateList(toDoListUpdating, toDoListEdits), HttpStatus.OK);
+		try {
+			ToDoList toDoListUpdating = this.webService.getListById(listId);
+			if (toDoListUpdating == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				return new ResponseEntity<>(this.webService.updateList(toDoListUpdating, toDoListEdits), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	// ////
+	// DELETE
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpStatus> deleteList(@PathVariable("id") long listId) {
-		ToDoList toDoList = this.webService.getListById(listId);
-		if (toDoList == null)
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		else {
-			try {
-				this.webService.deleteList(toDoList);
-				return new ResponseEntity<>(HttpStatus.OK);
-			} catch (Exception e) {
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		try {
+			ToDoList toDoList = this.webService.getListById(listId);
+			if (toDoList == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				try {
+					this.webService.deleteList(toDoList);
+					return new ResponseEntity<>(HttpStatus.OK);
+				} catch (Exception e) {
+					return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
 			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

@@ -1,5 +1,7 @@
 package com.example.aitodo.models;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +44,9 @@ public class ToDoList {
 	@Column(name = "is_deleted")
 	private boolean isDeleted;
 
+	@Column(name = "last_update")
+	private Timestamp lastUpdate;
+
 	@JsonManagedReference
 	@OneToMany(mappedBy = "toDoList", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<Item> items = new ArrayList();
@@ -49,11 +54,12 @@ public class ToDoList {
 	public ToDoList() {
 	}
 
-	public ToDoList(User user, String listName, boolean isComplete, boolean isDeleted) {
+	public ToDoList(User user, String listName, boolean isComplete, boolean isDeleted, Timestamp lastUpdate) {
 		this.user = user;
 		this.listName = listName;
 		this.isComplete = isComplete;
 		this.isDeleted = isDeleted;
+		this.lastUpdate = lastUpdate;
 	}
 
 	public long getListId() {
@@ -108,6 +114,18 @@ public class ToDoList {
 		this.isDeleted = isDeleted;
 	}
 
+	public boolean isIsDeleted() {
+		return this.isDeleted;
+	}
+
+	public Timestamp getLastUpdate() {
+		return this.lastUpdate;
+	}
+
+	public void setLastUpdate(Timestamp lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
 	@Override
 	public String toString() {
 		return "ToDoList {" +
@@ -117,6 +135,7 @@ public class ToDoList {
 				" isComplete: " + isComplete +
 				" items: " + items +
 				" isDeleted: " + isDeleted +
+				" lastUpdate: " + lastUpdate +
 				"}";
 	}
 

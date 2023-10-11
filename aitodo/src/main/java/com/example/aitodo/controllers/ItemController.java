@@ -1,5 +1,6 @@
 package com.example.aitodo.controllers;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,9 @@ public class ItemController {
 		this.webService = webService;
 	}
 
+	// ////
+	// GET
+
 	@GetMapping("")
 	public ResponseEntity<List<Item>> getItems() {
 		try {
@@ -49,12 +53,29 @@ public class ItemController {
 			if (item == null)
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			else {
-				return new ResponseEntity<Item>(item, HttpStatus.OK);
+				return new ResponseEntity<>(item, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	@GetMapping("/{id}/lastUpdate")
+	public ResponseEntity<Timestamp> getItemLastUpdated(@PathVariable("id") long itemId) {
+		try {
+			Item item = this.webService.getItemById(itemId);
+			if (item == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				return new ResponseEntity<>(item.getLastUpdate(), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// ////
+	// POST
 
 	@PostMapping("")
 	public ResponseEntity<Item> createItem(@RequestBody Item item) {
@@ -66,6 +87,9 @@ public class ItemController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// ////
+	// PUT
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Item> updateItem(@RequestBody Item itemEdits, @PathVariable("id") long itemId) {
@@ -83,19 +107,20 @@ public class ItemController {
 		}
 	}
 
+	// ////
+	// DELETE
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpStatus> deleteItem(@PathVariable("id") long itemId) {
-		Item item = this.webService.getItemById(itemId);
-		if (item == null)
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		else {
-			try {
-				this.webService.deleteItem(item);
+		try {
+			Item item = this.webService.getItemById(itemId);
+			if (item == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else
 				return new ResponseEntity<>(HttpStatus.OK);
 
-			} catch (Exception e) {
-				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

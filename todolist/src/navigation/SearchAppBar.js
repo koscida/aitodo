@@ -75,7 +75,7 @@ export default function SearchAppBar() {
 							display: { xs: "none", sm: "block" },
 						}}
 					>
-						ToDo List
+						ToDo List App
 					</Typography>
 					<Search>
 						<SearchIconWrapper>

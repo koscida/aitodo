@@ -1,5 +1,6 @@
 package com.example.aitodo.controllers;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.aitodo.models.ToDoList;
 import com.example.aitodo.models.User;
 import com.example.aitodo.services.WebService;
 
@@ -28,6 +30,9 @@ public class UserController {
 	public UserController(WebService webService) {
 		this.webService = webService;
 	}
+
+	// ////
+	// GET
 
 	@GetMapping("")
 	public ResponseEntity<List<User>> getUsers(@RequestParam(name = "email", required = false) String email) {
@@ -50,13 +55,46 @@ public class UserController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable("id") long userId) {
-		User user = this.webService.getUserById(userId);
+		try {
+			User user = this.webService.getUserById(userId);
 
-		if (user == null)
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		else
-			return new ResponseEntity<>(user, HttpStatus.OK);
+			if (user == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else
+				return new ResponseEntity<>(user, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
+
+	@GetMapping("/{id}/lastUpdate")
+	public ResponseEntity<Timestamp> getUserLastUpdate(@PathVariable("id") long userId) {
+		try {
+			User user = this.webService.getUserById(userId);
+			if (user == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else
+				return new ResponseEntity<>(user.getLastUpdate(), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/{id}/lists")
+	public ResponseEntity<List<ToDoList>> getUserListsById(@PathVariable("id") long userId) {
+		try {
+			User user = this.webService.getUserById(userId);
+			if (user == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else
+				return new ResponseEntity<>(user.getToDoLists(), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// ////
+	// POST
 
 	@PostMapping("")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -68,16 +106,26 @@ public class UserController {
 		}
 	}
 
+	// ////
+	// PUT
+
 	@PutMapping("/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable("id") long userId, @RequestBody User userEdits) {
-		User userUpdating = this.webService.getUserById(userId);
+		try {
+			User userUpdating = this.webService.getUserById(userId);
 
-		if (userUpdating == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			return new ResponseEntity<>(this.webService.updateUser(userUpdating, userEdits), HttpStatus.OK);
+			if (userUpdating == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else {
+				return new ResponseEntity<>(this.webService.updateUser(userUpdating, userEdits), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	// ////
+	// DELETE
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") long userId) {

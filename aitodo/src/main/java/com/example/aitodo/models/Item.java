@@ -1,6 +1,7 @@
 package com.example.aitodo.models;
 
 import java.util.Date;
+import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -45,17 +46,21 @@ public class Item {
 	@Column(name = "is_deleted")
 	private boolean isDeleted;
 
+	@Column(name = "last_update")
+	private Timestamp lastUpdate;
+
 	public Item() {
 	}
 
 	public Item(ToDoList toDoList, int itemOrder, String itemDescription, Date dueDate,
-			boolean isComplete, boolean isDeleted) {
+			boolean isComplete, boolean isDeleted, Timestamp lastUpdate) {
 		this.toDoList = toDoList;
 		this.itemOrder = itemOrder;
 		this.itemDescription = itemDescription;
 		this.dueDate = dueDate;
 		this.isComplete = isComplete;
 		this.isDeleted = isDeleted;
+		this.lastUpdate = lastUpdate;
 	}
 
 	public long getItemId() {
@@ -122,6 +127,14 @@ public class Item {
 		this.isDeleted = isDeleted;
 	}
 
+	public Timestamp getLastUpdate() {
+		return this.lastUpdate;
+	}
+
+	public void setLastUpdate(Timestamp lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
 	@Override
 	public String toString() {
 		return "Item {" +
@@ -132,6 +145,7 @@ public class Item {
 				" dueDate: " + dueDate +
 				" isComplete: " + isComplete +
 				" isDeleted: " + isDeleted +
+				" lastUpdate: " + lastUpdate +
 				"}";
 	}
 

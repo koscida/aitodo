@@ -1,5 +1,7 @@
 package com.example.aitodo.models;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,9 @@ public class User {
 	@Column(name = "is_deleted")
 	private boolean isDeleted;
 
+	@Column(name = "last_update")
+	private Timestamp lastUpdate;
+
 	@JsonManagedReference
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private List<ToDoList> toDoLists = new ArrayList<>();
@@ -43,11 +48,12 @@ public class User {
 	public User() {
 	}
 
-	public User(String displayName, String email, String googleId, boolean isDeleted) {
+	public User(String displayName, String email, String googleId, boolean isDeleted, Timestamp lastUpdate) {
 		this.displayName = displayName;
 		this.email = email;
 		this.googleId = googleId;
 		this.isDeleted = isDeleted;
+		this.lastUpdate = lastUpdate;
 	}
 
 	public long getUserId() {
@@ -98,6 +104,18 @@ public class User {
 		this.isDeleted = isDeleted;
 	}
 
+	public boolean isIsDeleted() {
+		return this.isDeleted;
+	}
+
+	public Timestamp getLastUpdate() {
+		return this.lastUpdate;
+	}
+
+	public void setLastUpdate(Timestamp lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+
 	@Override
 	public String toString() {
 		return "User {" +
@@ -107,6 +125,7 @@ public class User {
 				" googleId: " + googleId +
 				" toDoLists: " + toDoLists +
 				" isDeleted: " + isDeleted +
+				" lastUpdate: " + lastUpdate +
 				"}";
 	}
 

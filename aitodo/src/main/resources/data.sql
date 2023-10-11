@@ -1,8 +1,8 @@
-INSERT INTO USERS VALUES (1, 'Tester McTesting', 'test1@email.com',null, false);
-INSERT INTO USERS VALUES (2, 'Test', 'test2@email.com',null, false);
+INSERT INTO USERS (USER_ID, DISPLAY_NAME, EMAIL, GOOGLE_ID) VALUES (1, 'Tester McTesting', 'test1@email.com',null);
+INSERT INTO USERS (USER_ID, DISPLAY_NAME, EMAIL, GOOGLE_ID)VALUES (2, 'Test', 'test2@email.com',null);
 
-INSERT INTO LISTS VALUES (1, 1, 'First Test List', false, false);
-INSERT INTO LISTS VALUES (2, 1, 'Second Test List', false, false);
+INSERT INTO LISTS (LIST_ID, USER_ID, LIST_NAME) VALUES (1, 1, 'First Test List');
+INSERT INTO LISTS (LIST_ID, USER_ID, LIST_NAME) VALUES (2, 1, 'Second Test List');
 
-INSERT INTO ITEMS VALUES (1, 1, 1, 'ABC', null, false, false);
-INSERT INTO ITEMS VALUES (2, 1, 2, 'XYZ', null, false, false);
+INSERT INTO ITEMS (ITEM_ID, LIST_ID, ITEM_ORDER, ITEM_DESCRIPTION, DUE_DATE) VALUES (1, 1, 1, 'ABC', null);
+INSERT INTO ITEMS (ITEM_ID, LIST_ID, ITEM_ORDER, ITEM_DESCRIPTION, DUE_DATE) VALUES (2, 1, 2, 'XYZ', null);
