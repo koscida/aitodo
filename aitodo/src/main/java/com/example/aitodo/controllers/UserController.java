@@ -1,9 +1,11 @@
 package com.example.aitodo.controllers;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +70,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}/lastUpdate")
-	public ResponseEntity<Timestamp> getUserLastUpdate(@PathVariable("id") long userId) {
+	public ResponseEntity<LocalDateTime> getUserLastUpdate(@PathVariable("id") long userId) {
 		try {
 			User user = this.webService.getUserById(userId);
 			if (user == null)
@@ -99,6 +101,7 @@ public class UserController {
 	@PostMapping("")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		try {
+			user.setLastUpdate(LocalDateTime.now());
 			User newUser = this.webService.createNewUser(user);
 			return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 		} catch (Exception e) {

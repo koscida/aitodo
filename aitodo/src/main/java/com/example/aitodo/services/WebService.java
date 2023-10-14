@@ -2,6 +2,7 @@ package com.example.aitodo.services;
 
 // import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public class WebService {
 		userUpdating.setDisplayName(userEdits.getDisplayName());
 		userUpdating.setEmail(userEdits.getEmail());
 		userUpdating.setGoogleId(userEdits.getGoogleId());
-		userUpdating.setLastUpdate(new Timestamp((new Date()).getTime()));
+		userUpdating.setLastUpdate(LocalDateTime.now());
 		return this.userRepository.save(userUpdating);
 	}
 
@@ -87,7 +88,7 @@ public class WebService {
 	public ToDoList updateList(ToDoList toDoListUpdating, ToDoList toDoListEdits) {
 		toDoListUpdating.setListName(toDoListEdits.getListName());
 		toDoListUpdating.setIsComplete(toDoListEdits.getIsComplete());
-		toDoListUpdating.setLastUpdate(new Timestamp((new Date()).getTime()));
+		toDoListUpdating.setLastUpdate(LocalDateTime.now());
 		return this.toDoListRepository.save(toDoListUpdating);
 	}
 
@@ -118,7 +119,7 @@ public class WebService {
 		updatingItem.setItemDescription(itemEdits.getItemDescription());
 		updatingItem.setDueDate(itemEdits.getDueDate());
 		updatingItem.setIsComplete(itemEdits.isIsComplete());
-		updatingItem.setLastUpdate(new Timestamp((new Date()).getTime()));
+		updatingItem.setLastUpdate(LocalDateTime.now());
 		return this.itemRepository.save(updatingItem);
 	}
 

@@ -1,6 +1,7 @@
 package com.example.aitodo.controllers;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,7 @@ public class ListController {
 	}
 
 	@GetMapping("/{id}/lastUpdate")
-	public ResponseEntity<Timestamp> getListUpdateLast(@PathVariable("id") long listId) {
+	public ResponseEntity<LocalDateTime> getListUpdateLast(@PathVariable("id") long listId) {
 		try {
 			ToDoList toDoList = this.webService.getListById(listId);
 			if (toDoList == null)
@@ -93,6 +94,7 @@ public class ListController {
 	public ResponseEntity<ToDoList> createList(@RequestBody ToDoList toDoList) {
 		try {
 			User defaultUser = this.webService.getUserById((long) 1);
+			toDoList.setLastUpdate(LocalDateTime.now());
 			ToDoList newList = this.webService.createNewList(defaultUser, toDoList);
 			return new ResponseEntity<>(newList, HttpStatus.CREATED);
 		} catch (Exception e) {

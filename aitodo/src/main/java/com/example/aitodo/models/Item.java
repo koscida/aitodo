@@ -1,6 +1,6 @@
 package com.example.aitodo.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -38,7 +38,7 @@ public class Item {
 	private String itemDescription;
 
 	@Column(name = "due_date")
-	private Date dueDate;
+	private LocalDateTime dueDate;
 
 	@Column(name = "is_complete")
 	private boolean isComplete;
@@ -47,13 +47,13 @@ public class Item {
 	private boolean isDeleted;
 
 	@Column(name = "last_update")
-	private Timestamp lastUpdate;
+	private LocalDateTime lastUpdate;
 
 	public Item() {
 	}
 
-	public Item(ToDoList toDoList, int itemOrder, String itemDescription, Date dueDate,
-			boolean isComplete, boolean isDeleted, Timestamp lastUpdate) {
+	public Item(ToDoList toDoList, int itemOrder, String itemDescription, LocalDateTime dueDate,
+			boolean isComplete, boolean isDeleted, LocalDateTime lastUpdate) {
 		this.toDoList = toDoList;
 		this.itemOrder = itemOrder;
 		this.itemDescription = itemDescription;
@@ -95,11 +95,11 @@ public class Item {
 		this.itemDescription = itemDescription;
 	}
 
-	public Date getDueDate() {
+	public LocalDateTime getDueDate() {
 		return this.dueDate;
 	}
 
-	public void setDueDate(Date dueDate) {
+	public void setDueDate(LocalDateTime dueDate) {
 		this.dueDate = dueDate;
 	}
 
@@ -127,11 +127,11 @@ public class Item {
 		this.isDeleted = isDeleted;
 	}
 
-	public Timestamp getLastUpdate() {
+	public LocalDateTime getLastUpdate() {
 		return this.lastUpdate;
 	}
 
-	public void setLastUpdate(Timestamp lastUpdate) {
+	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 

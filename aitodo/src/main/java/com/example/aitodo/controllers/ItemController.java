@@ -1,6 +1,7 @@
 package com.example.aitodo.controllers;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.aitodo.models.Item;
 import com.example.aitodo.models.ToDoList;
+import com.example.aitodo.models.User;
 import com.example.aitodo.services.WebService;
 
 @RestController
@@ -61,7 +63,7 @@ public class ItemController {
 	}
 
 	@GetMapping("/{id}/lastUpdate")
-	public ResponseEntity<Timestamp> getItemLastUpdated(@PathVariable("id") long itemId) {
+	public ResponseEntity<LocalDateTime> getItemLastUpdated(@PathVariable("id") long itemId) {
 		try {
 			Item item = this.webService.getItemById(itemId);
 			if (item == null)
@@ -80,7 +82,16 @@ public class ItemController {
 	@PostMapping("")
 	public ResponseEntity<Item> createItem(@RequestBody Item item) {
 		try {
+			LocalDateTime now = LocalDateTime.now();
 			ToDoList defaultList = this.webService.getListById((long) 1);
+			defaultList.setLastUpdate(now);
+			this.webService.updateList(defaultList, defaultList);
+
+			User user = this.webService.getUserById(defaultList.getUser().getUserId());
+			user.setLastUpdate(now);
+			this.webService.updateUser(user, user);
+
+			item.setLastUpdate(now);
 			Item newItem = this.webService.createNewItem(defaultList, item);
 			return new ResponseEntity<>(newItem, HttpStatus.CREATED);
 		} catch (Exception e) {

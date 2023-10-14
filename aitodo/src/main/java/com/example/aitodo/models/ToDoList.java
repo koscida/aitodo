@@ -1,6 +1,6 @@
 package com.example.aitodo.models;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class ToDoList {
 	private boolean isDeleted;
 
 	@Column(name = "last_update")
-	private Timestamp lastUpdate;
+	private LocalDateTime lastUpdate;
 
 	@JsonManagedReference
 	@OneToMany(mappedBy = "toDoList", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -54,7 +54,8 @@ public class ToDoList {
 	public ToDoList() {
 	}
 
-	public ToDoList(User user, String listName, boolean isComplete, boolean isDeleted, Timestamp lastUpdate) {
+	public ToDoList(User user, String listName, boolean isComplete, boolean isDeleted,
+			LocalDateTime lastUpdate) {
 		this.user = user;
 		this.listName = listName;
 		this.isComplete = isComplete;
@@ -118,11 +119,11 @@ public class ToDoList {
 		return this.isDeleted;
 	}
 
-	public Timestamp getLastUpdate() {
+	public LocalDateTime getLastUpdate() {
 		return this.lastUpdate;
 	}
 
-	public void setLastUpdate(Timestamp lastUpdate) {
+	public void setLastUpdate(LocalDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
