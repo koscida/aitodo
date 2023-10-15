@@ -90,13 +90,19 @@ public class ListController {
 	// ////
 	// POST
 
-	@PostMapping("")
-	public ResponseEntity<ToDoList> createList(@RequestBody ToDoList toDoList) {
+	// remove post mapping for single list, only add list to user
+
+	// create a new list item
+	@PostMapping("/{id}")
+	public ResponseEntity<Item> createItem(@RequestParam("id") long listId, @RequestBody Item item) {
 		try {
-			User defaultUser = this.webService.getUserById((long) 1);
-			toDoList.setLastUpdate(LocalDateTime.now());
-			ToDoList newList = this.webService.createNewList(defaultUser, toDoList);
-			return new ResponseEntity<>(newList, HttpStatus.CREATED);
+			ToDoList toDoList = this.webService.getListById(listId);
+			if (toDoList == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				Item newItem = this.webService.createNewItem(toDoList, item);
+				return new ResponseEntity<>(newItem, HttpStatus.CREATED);
+			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -113,6 +119,25 @@ public class ListController {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			else {
 				return new ResponseEntity<>(this.webService.updateList(toDoListUpdating, toDoListEdits), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping("/{listId}/items/{itemId}")
+	public ResponseEntity<ToDoList> updateItem(@PathVariable("listId") long listId, @PathVariable("itemId") long itemId,
+			Item itemEdits) {
+		try {
+			ToDoList toDoList = this.webService.getListById(listId);
+			Item itemUpdating = this.webService.getItemById(itemId);
+			if (toDoList == null || itemUpdating == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				this.webService.updateItem(itemUpdating, itemEdits);
+
+				ToDoList toDoListUpdated = this.webService.getListById(listId);
+				return new ResponseEntity<>(toDoListUpdated, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

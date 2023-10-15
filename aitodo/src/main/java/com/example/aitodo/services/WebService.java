@@ -52,6 +52,9 @@ public class WebService {
 	}
 
 	public User createNewUser(User user) {
+		LocalDateTime now = LocalDateTime.now();
+		user.setLastUpdate(now);
+
 		return this.userRepository.save(user);
 	}
 
@@ -59,14 +62,20 @@ public class WebService {
 		userUpdating.setDisplayName(userEdits.getDisplayName());
 		userUpdating.setEmail(userEdits.getEmail());
 		userUpdating.setGoogleId(userEdits.getGoogleId());
-		userUpdating.setLastUpdate(LocalDateTime.now());
+
+		LocalDateTime now = LocalDateTime.now();
+		userUpdating.setLastUpdate(now);
+
 		return this.userRepository.save(userUpdating);
 	}
 
 	public void deleteUser(User user) {
+		LocalDateTime now = LocalDateTime.now();
+		user.setLastUpdate(now);
+
 		user.setIsDeleted(true);
+
 		this.userRepository.save(user);
-		// this.userRepository.deleteById(userId);
 	}
 
 	//
@@ -80,22 +89,37 @@ public class WebService {
 		return this.toDoListRepository.findByListIdAndIsDeleted(listId, false);
 	}
 
-	public ToDoList createNewList(User user, ToDoList listId) {
-		listId.setUser(user);
-		return this.toDoListRepository.save(listId);
+	public ToDoList createNewList(User user, ToDoList toDoList) {
+		LocalDateTime now = LocalDateTime.now();
+
+		user.setLastUpdate(now);
+		this.updateUser(user, user);
+
+		toDoList.setUser(user);
+		toDoList.setLastUpdate(now);
+		return this.toDoListRepository.save(toDoList);
 	}
 
 	public ToDoList updateList(ToDoList toDoListUpdating, ToDoList toDoListEdits) {
+		LocalDateTime now = LocalDateTime.now();
+
+		User user = getUserById(toDoListUpdating.getUser().getUserId());
+		user.setLastUpdate(now);
+		this.updateUser(user, user);
+
 		toDoListUpdating.setListName(toDoListEdits.getListName());
 		toDoListUpdating.setIsComplete(toDoListEdits.getIsComplete());
-		toDoListUpdating.setLastUpdate(LocalDateTime.now());
+		toDoListUpdating.setLastUpdate(now);
 		return this.toDoListRepository.save(toDoListUpdating);
 	}
 
 	public void deleteList(ToDoList list) {
+		LocalDateTime now = LocalDateTime.now();
+		list.setLastUpdate(now);
+
 		list.setIsDeleted(true);
+
 		this.toDoListRepository.save(list);
-		// this.toDoListRepository.deleteById(listId);
 	}
 
 	//
@@ -110,23 +134,51 @@ public class WebService {
 	}
 
 	public Item createNewItem(ToDoList toDoList, Item item) {
+		LocalDateTime now = LocalDateTime.now();
+
+		toDoList.setLastUpdate(now);
+		this.updateList(toDoList, toDoList);
+
+		User user = this.getUserById(toDoList.getUser().getUserId());
+		user.setLastUpdate(now);
+		this.updateUser(user, user);
+
 		item.setToDoList(toDoList);
+		item.setLastUpdate(now);
 		return this.itemRepository.save(item);
 	}
 
 	public Item updateItem(Item updatingItem, Item itemEdits) {
-		updatingItem.setItemOrder(itemEdits.getItemOrder());
-		updatingItem.setItemDescription(itemEdits.getItemDescription());
-		updatingItem.setDueDate(itemEdits.getDueDate());
+		LocalDateTime now = LocalDateTime.now();
+
+		ToDoList toDoList = this.getListById(updatingItem.getToDoList().getListId());
+		toDoList.setLastUpdate(now);
+		this.updateList(toDoList, toDoList);
+
+		User user = getUserById(toDoList.getUser().getUserId());
+		user.setLastUpdate(now);
+		this.updateUser(user, user);
+
+		if (itemEdits.getItemOrder() > 0)
+			updatingItem.setItemOrder(itemEdits.getItemOrder());
+		if (itemEdits.getItemDescription() != null)
+			updatingItem.setItemDescription(itemEdits.getItemDescription());
+		if (itemEdits.getDueDate() != null)
+			updatingItem.setDueDate(itemEdits.getDueDate());
 		updatingItem.setIsComplete(itemEdits.isIsComplete());
-		updatingItem.setLastUpdate(LocalDateTime.now());
+
+		updatingItem.setLastUpdate(now);
+
 		return this.itemRepository.save(updatingItem);
 	}
 
 	public void deleteItem(Item item) {
+		LocalDateTime now = LocalDateTime.now();
+		item.setLastUpdate(now);
+
 		item.setIsDeleted(true);
+
 		this.itemRepository.save(item);
-		// this.itemRepository.deleteById(itemId);
 	}
 
 	// public List<Item> getListItems(long listId) {

@@ -1,11 +1,15 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ToDoLists from "../components/ToDoLists";
+import Home from "../pages/Home";
+import List from "../pages/List";
+import ErrorPage from "./ErrorPage";
 
 const Router = () => {
 	return (
 		<Routes>
-			<Route element={<ToDoLists />} path="/" exact={true} />
+			<Route element={<Home />} path="/" exact={true} />
+			<Route element={<List />} path="/list/:id" exact={true} />
+			<Route path="*" element={<ErrorPage />} />
 		</Routes>
 	);
 };

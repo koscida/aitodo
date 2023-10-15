@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { Card, CardContent } from "@mui/material";
-import { getData, buildUrl } from "../api/CRUD";
+import { Card, CardContent, Button, Box } from "@mui/material";
+import { getData, parseISOLocal } from "../api/CRUD";
 
 const ToDoLists = () => {
 	const [toDoLists, setToDoLists] = useLocalStorage(
@@ -14,11 +14,6 @@ const ToDoLists = () => {
 	);
 	const [serverLastUpdate, setServerLastUpdate] = useState(null);
 
-	function parseISOLocal(s) {
-		var b = s.split(/\D/);
-		return new Date(b[0], b[1] - 1, b[2], b[3], b[4], b[5]);
-	}
-
 	const pullData = () => {
 		const promise = getData("users/1");
 		promise.then(
@@ -27,17 +22,17 @@ const ToDoLists = () => {
 
 				// update todo lists
 				const toDoLists = value["toDoLists"];
-				console.log("toDoLists: ", toDoLists);
+				// console.log("toDoLists: ", toDoLists);
 				setToDoLists(toDoLists);
 
 				// update local update
 				const newLocalLastUpdateDate = new Date();
-				console.log("newLocalLastUpdateDate: ", newLocalLastUpdateDate);
+				// console.log("newLocalLastUpdateDate: ", newLocalLastUpdateDate);
 				setLocalLastUpdate(newLocalLastUpdateDate);
 
 				// update server update
 				const newServerLastUpdate = parseISOLocal(value["lastUpdate"]);
-				console.log("newServerLastUpdate: ", newServerLastUpdate);
+				// console.log("newServerLastUpdate: ", newServerLastUpdate);
 				setServerLastUpdate(newServerLastUpdate);
 			},
 			(error) => {
@@ -53,12 +48,10 @@ const ToDoLists = () => {
 			(value) => {
 				// update server last update
 				const newServerLastUpdate = parseISOLocal(value);
-				console.log("newServerLastUpdate: ", newServerLastUpdate);
+				// console.log("newServerLastUpdate: ", newServerLastUpdate);
 				setServerLastUpdate(newServerLastUpdate);
 
-				console.log("localLastUpdate: ", localLastUpdate);
-				// const localLastUpdateDate = parseISOLocal(localLastUpdate);
-				// console.log("localLastUpdateDate: ", localLastUpdateDate);
+				// console.log("localLastUpdate: ", localLastUpdate);
 
 				// check if out of date
 				if (localLastUpdate < newServerLastUpdate) {
@@ -86,10 +79,17 @@ const ToDoLists = () => {
 
 	return (
 		<>
+			<Box sx={{ display: "flex", textAlign: "end" }}>
+				<p>
+					<Button variant="outlined" onClick={() => loadPage()}>
+						Refresh
+					</Button>
+				</p>
+			</Box>
 			{toDoLists !== null ? (
 				toDoLists.map((list) => {
 					const itemsIncomplete = list.items.reduce(
-						(sum, item) => sum + (item.isComplete ? 0 : 1),
+						(sum, item) => sum + (item.isComplete ? 1 : 0),
 						0
 					);
 					return (
@@ -97,12 +97,28 @@ const ToDoLists = () => {
 							sx={{ minWidth: 275, margin: "1rem 0" }}
 							key={list.listId}
 						>
-							<CardContent>
-								<p>{list.listName}</p>
-								<p>
-									{itemsIncomplete} / {list.items.length}{" "}
-									Complete
-								</p>
+							<CardContent
+								sx={{
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+								}}
+							>
+								<Box>
+									<p>{list.listName}</p>
+									<p>
+										{itemsIncomplete} / {list.items.length}{" "}
+										Complete
+									</p>
+								</Box>
+								<Box>
+									<Button
+										href={`/list/${list.listId}`}
+										variant="outlined"
+									>
+										Open
+									</Button>
+								</Box>
 							</CardContent>
 						</Card>
 					);
@@ -110,9 +126,6 @@ const ToDoLists = () => {
 			) : (
 				<>Load Lists</>
 			)}
-			<p>
-				<button onClick={() => loadPage()}>Refresh</button>
-			</p>
 		</>
 	);
 };

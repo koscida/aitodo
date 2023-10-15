@@ -79,25 +79,7 @@ public class ItemController {
 	// ////
 	// POST
 
-	@PostMapping("")
-	public ResponseEntity<Item> createItem(@RequestBody Item item) {
-		try {
-			LocalDateTime now = LocalDateTime.now();
-			ToDoList defaultList = this.webService.getListById((long) 1);
-			defaultList.setLastUpdate(now);
-			this.webService.updateList(defaultList, defaultList);
-
-			User user = this.webService.getUserById(defaultList.getUser().getUserId());
-			user.setLastUpdate(now);
-			this.webService.updateUser(user, user);
-
-			item.setLastUpdate(now);
-			Item newItem = this.webService.createNewItem(defaultList, item);
-			return new ResponseEntity<>(newItem, HttpStatus.CREATED);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+	// remove post mapping for single item, can only post an item to a list
 
 	// ////
 	// PUT

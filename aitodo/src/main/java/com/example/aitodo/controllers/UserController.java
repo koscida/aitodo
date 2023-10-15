@@ -109,6 +109,21 @@ public class UserController {
 		}
 	}
 
+	@PostMapping("/{id}")
+	public ResponseEntity<ToDoList> createList(@RequestParam("id") long userId, @RequestBody ToDoList toDoList) {
+		try {
+			User user = this.webService.getUserById(userId);
+			if (user == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				ToDoList newList = this.webService.createNewList(user, toDoList);
+				return new ResponseEntity<>(newList, HttpStatus.CREATED);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	// ////
 	// PUT
 
