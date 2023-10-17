@@ -10,11 +10,10 @@ export default function List() {
 	const { id } = useParams();
 
 	const [list, setList] = useLocalStorage(`aitodolist-List-${id}-list`, null);
-	const [localLastUpdate, setLocalLastUpdate] = useLocalStorage(
-		`aitodolist-List-${id}-localLastUpdate`,
+	const [serverLastUpdate, setServerLastUpdate] = useLocalStorage(
+		`aitodolist-List-${id}-serverLastUpdate`,
 		null
 	);
-	const [serverLastUpdate, setServerLastUpdate] = useState(null);
 
 	const sortList = (list) =>
 		list
@@ -33,15 +32,10 @@ export default function List() {
 				// console.log("list: ", list);
 				setList(list);
 
-				// update local update
-				const newLocalLastUpdateDate = new Date();
-				// console.log("newLocalLastUpdateDate: ", newLocalLastUpdateDate);
-				setLocalLastUpdate(newLocalLastUpdateDate);
-
 				// update server update
-				const newServerLastUpdate = parseISOLocal(value["lastUpdate"]);
-				// console.log("newServerLastUpdate: ", newServerLastUpdate);
-				setServerLastUpdate(newServerLastUpdate);
+				const newLastUpdate = parseISOLocal(value["lastUpdate"]);
+				// console.log("newLastUpdate: ", newLastUpdate);
+				setServerLastUpdate(newLastUpdate);
 			},
 			(error) => {
 				console.log("error: ", error);
@@ -59,10 +53,8 @@ export default function List() {
 				// console.log("newServerLastUpdate: ", newServerLastUpdate);
 				setServerLastUpdate(newServerLastUpdate);
 
-				// console.log("localLastUpdate: ", localLastUpdate);
-
 				// check if out of date
-				if (localLastUpdate < newServerLastUpdate) {
+				if (serverLastUpdate < newServerLastUpdate) {
 					pullData();
 				}
 			},
@@ -78,7 +70,7 @@ export default function List() {
 
 	const loadPage = () => {
 		// begin, if either toDoLists or listUpdate null, pull both
-		if (list === null || localLastUpdate === null) {
+		if (list === null || serverLastUpdate === null) {
 			pullData();
 		} else {
 			pullLastUpdate();
@@ -94,22 +86,17 @@ export default function List() {
 
 	// handlers
 
-	const updateItem = (itemId, item) => {
-		const promise = updateData(`lists/${id}/items/${itemId}`, item);
+	const updateItem = (itemId, itemUpdates) => {
+		const promise = updateData(`lists/${id}/items/${itemId}`, itemUpdates);
 		promise.then(
 			(value) => {
-				console.log("value: ", value);
+				// console.log("value: ", value);
 
 				// update lists
 				let list = value;
 				list.items = sortList(value.items);
 				console.log("list: ", list);
 				setList(list);
-
-				// update local update
-				const newLocalLastUpdateDate = new Date();
-				console.log("newLocalLastUpdateDate: ", newLocalLastUpdateDate);
-				setLocalLastUpdate(newLocalLastUpdateDate);
 
 				// update server update
 				const newServerLastUpdate = parseISOLocal(value["lastUpdate"]);
@@ -123,12 +110,15 @@ export default function List() {
 	};
 
 	const handleCheck = (e) => {
-		console.log(e);
+		console.log("e: ", e);
 		const {
-			target: { name, value },
+			target: { checked, id },
 		} = e;
+		console.log("id: ", id, ", checked: ", checked);
 
-		updateItem(name, { isComplete: value === "on" });
+		const itemUpdates = { itemId: id, isComplete: checked };
+
+		updateItem(id, itemUpdates);
 	};
 
 	// render
@@ -161,7 +151,7 @@ export default function List() {
 										<Checkbox
 											onChange={handleCheck}
 											checked={item.isComplete}
-											name={item.itemId.toString()}
+											id={item.itemId}
 										/>
 										<p>{item.itemDescription}</p>
 										{item.dueDate ? (

@@ -3,6 +3,7 @@ package com.example.aitodo.services;
 // import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public class WebService {
 	}
 
 	public User createNewUser(User user) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 		user.setLastUpdate(now);
 
 		return this.userRepository.save(user);
@@ -63,14 +64,14 @@ public class WebService {
 		userUpdating.setEmail(userEdits.getEmail());
 		userUpdating.setGoogleId(userEdits.getGoogleId());
 
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 		userUpdating.setLastUpdate(now);
 
 		return this.userRepository.save(userUpdating);
 	}
 
 	public void deleteUser(User user) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 		user.setLastUpdate(now);
 
 		user.setIsDeleted(true);
@@ -90,7 +91,7 @@ public class WebService {
 	}
 
 	public ToDoList createNewList(User user, ToDoList toDoList) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 
 		user.setLastUpdate(now);
 		this.updateUser(user, user);
@@ -101,7 +102,7 @@ public class WebService {
 	}
 
 	public ToDoList updateList(ToDoList toDoListUpdating, ToDoList toDoListEdits) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 
 		User user = getUserById(toDoListUpdating.getUser().getUserId());
 		user.setLastUpdate(now);
@@ -114,7 +115,7 @@ public class WebService {
 	}
 
 	public void deleteList(ToDoList list) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 		list.setLastUpdate(now);
 
 		list.setIsDeleted(true);
@@ -134,7 +135,7 @@ public class WebService {
 	}
 
 	public Item createNewItem(ToDoList toDoList, Item item) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 
 		toDoList.setLastUpdate(now);
 		this.updateList(toDoList, toDoList);
@@ -149,7 +150,7 @@ public class WebService {
 	}
 
 	public Item updateItem(Item updatingItem, Item itemEdits) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 
 		ToDoList toDoList = this.getListById(updatingItem.getToDoList().getListId());
 		toDoList.setLastUpdate(now);
@@ -165,7 +166,8 @@ public class WebService {
 			updatingItem.setItemDescription(itemEdits.getItemDescription());
 		if (itemEdits.getDueDate() != null)
 			updatingItem.setDueDate(itemEdits.getDueDate());
-		updatingItem.setIsComplete(itemEdits.isIsComplete());
+		if (itemEdits.getIsComplete())
+			updatingItem.setIsComplete(itemEdits.getIsComplete());
 
 		updatingItem.setLastUpdate(now);
 
@@ -173,7 +175,7 @@ public class WebService {
 	}
 
 	public void deleteItem(Item item) {
-		LocalDateTime now = LocalDateTime.now();
+		ZonedDateTime now = ZonedDateTime.now();
 		item.setLastUpdate(now);
 
 		item.setIsDeleted(true);

@@ -2,6 +2,7 @@ package com.example.aitodo.controllers;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -63,7 +64,7 @@ public class ItemController {
 	}
 
 	@GetMapping("/{id}/lastUpdate")
-	public ResponseEntity<LocalDateTime> getItemLastUpdated(@PathVariable("id") long itemId) {
+	public ResponseEntity<ZonedDateTime> getItemLastUpdated(@PathVariable("id") long itemId) {
 		try {
 			Item item = this.webService.getItemById(itemId);
 			if (item == null)
@@ -85,7 +86,7 @@ public class ItemController {
 	// PUT
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Item> updateItem(@RequestBody Item itemEdits, @PathVariable("id") long itemId) {
+	public ResponseEntity<Item> updateItem(@PathVariable("id") long itemId, @RequestBody Item itemEdits) {
 		try {
 			Item itemUpdating = this.webService.getItemById(itemId);
 			if (itemUpdating == null)

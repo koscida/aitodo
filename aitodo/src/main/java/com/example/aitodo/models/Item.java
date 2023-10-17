@@ -1,6 +1,7 @@
 package com.example.aitodo.models;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -47,13 +48,13 @@ public class Item {
 	private boolean isDeleted;
 
 	@Column(name = "last_update")
-	private LocalDateTime lastUpdate;
+	private ZonedDateTime lastUpdate;
 
 	public Item() {
 	}
 
 	public Item(ToDoList toDoList, int itemOrder, String itemDescription, LocalDateTime dueDate,
-			boolean isComplete, boolean isDeleted, LocalDateTime lastUpdate) {
+			boolean isComplete, boolean isDeleted, ZonedDateTime lastUpdate) {
 		this.toDoList = toDoList;
 		this.itemOrder = itemOrder;
 		this.itemDescription = itemDescription;
@@ -127,11 +128,11 @@ public class Item {
 		this.isDeleted = isDeleted;
 	}
 
-	public LocalDateTime getLastUpdate() {
+	public ZonedDateTime getLastUpdate() {
 		return this.lastUpdate;
 	}
 
-	public void setLastUpdate(LocalDateTime lastUpdate) {
+	public void setLastUpdate(ZonedDateTime lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
@@ -139,7 +140,7 @@ public class Item {
 	public String toString() {
 		return "Item {" +
 				" itemId: " + itemId +
-				" listId: " + toDoList.getListId() +
+				(toDoList != null ? (" listId: " + toDoList.getListId()) : "") +
 				" itemOrder: " + itemOrder +
 				" itemDescription: " + itemDescription +
 				" dueDate: " + dueDate +

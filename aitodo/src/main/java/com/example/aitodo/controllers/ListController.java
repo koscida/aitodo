@@ -2,6 +2,7 @@ package com.example.aitodo.controllers;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -62,7 +63,7 @@ public class ListController {
 	}
 
 	@GetMapping("/{id}/lastUpdate")
-	public ResponseEntity<LocalDateTime> getListUpdateLast(@PathVariable("id") long listId) {
+	public ResponseEntity<ZonedDateTime> getListUpdateLast(@PathVariable("id") long listId) {
 		try {
 			ToDoList toDoList = this.webService.getListById(listId);
 			if (toDoList == null)
@@ -93,8 +94,8 @@ public class ListController {
 	// remove post mapping for single list, only add list to user
 
 	// create a new list item
-	@PostMapping("/{id}")
-	public ResponseEntity<Item> createItem(@RequestParam("id") long listId, @RequestBody Item item) {
+	@PostMapping("/{id}/items")
+	public ResponseEntity<Item> createItem(@PathVariable("id") long listId, @RequestBody Item item) {
 		try {
 			ToDoList toDoList = this.webService.getListById(listId);
 			if (toDoList == null)
@@ -126,8 +127,9 @@ public class ListController {
 	}
 
 	@PutMapping("/{listId}/items/{itemId}")
-	public ResponseEntity<ToDoList> updateItem(@PathVariable("listId") long listId, @PathVariable("itemId") long itemId,
-			Item itemEdits) {
+	public ResponseEntity<ToDoList> updateItemThroughList(@PathVariable("listId") long listId,
+			@PathVariable("itemId") long itemId,
+			@RequestBody Item itemEdits) {
 		try {
 			ToDoList toDoList = this.webService.getListById(listId);
 			Item itemUpdating = this.webService.getItemById(itemId);

@@ -8,32 +8,26 @@ const ToDoLists = () => {
 		"aitodolist-ToDoLists-toDoLists",
 		null
 	);
-	const [localLastUpdate, setLocalLastUpdate] = useLocalStorage(
-		"aitodolist-ToDoLists-localLastUpdate",
+	const [serverLastUpdate, setServerLastUpdate] = useLocalStorage(
+		"aitodolist-ToDoLists-serverLastUpdate",
 		null
 	);
-	const [serverLastUpdate, setServerLastUpdate] = useState(null);
 
 	const pullData = () => {
 		const promise = getData("users/1");
 		promise.then(
 			(value) => {
-				console.log("value: ", value);
+				// console.log("value: ", value);
 
 				// update todo lists
 				const toDoLists = value["toDoLists"];
 				// console.log("toDoLists: ", toDoLists);
 				setToDoLists(toDoLists);
 
-				// update local update
-				const newLocalLastUpdateDate = new Date();
-				// console.log("newLocalLastUpdateDate: ", newLocalLastUpdateDate);
-				setLocalLastUpdate(newLocalLastUpdateDate);
-
 				// update server update
-				const newServerLastUpdate = parseISOLocal(value["lastUpdate"]);
-				// console.log("newServerLastUpdate: ", newServerLastUpdate);
-				setServerLastUpdate(newServerLastUpdate);
+				const newLastUpdate = parseISOLocal(value["lastUpdate"]);
+				// console.log("newLastUpdate: ", newLastUpdate);
+				setServerLastUpdate(newLastUpdate);
 			},
 			(error) => {
 				console.log("error: ", error);
@@ -51,10 +45,8 @@ const ToDoLists = () => {
 				// console.log("newServerLastUpdate: ", newServerLastUpdate);
 				setServerLastUpdate(newServerLastUpdate);
 
-				// console.log("localLastUpdate: ", localLastUpdate);
-
 				// check if out of date
-				if (localLastUpdate < newServerLastUpdate) {
+				if (serverLastUpdate < newServerLastUpdate) {
 					pullData();
 				}
 			},
@@ -70,7 +62,7 @@ const ToDoLists = () => {
 
 	const loadPage = () => {
 		// begin, if either toDoLists or listUpdate null, pull both
-		if (toDoLists === null || localLastUpdate === null) {
+		if (toDoLists === null || serverLastUpdate === null) {
 			pullData();
 		} else {
 			pullLastUpdate();
@@ -126,6 +118,10 @@ const ToDoLists = () => {
 			) : (
 				<>Load Lists</>
 			)}
+			<p>
+				serverLastUpdate:{" "}
+				{serverLastUpdate ? serverLastUpdate.toString() : "NULL"}
+			</p>
 		</>
 	);
 };

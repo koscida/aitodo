@@ -2,6 +2,7 @@ package com.example.aitodo.controllers;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.aitodo.models.Item;
 import com.example.aitodo.models.ToDoList;
 import com.example.aitodo.models.User;
 import com.example.aitodo.services.WebService;
@@ -70,7 +72,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}/lastUpdate")
-	public ResponseEntity<LocalDateTime> getUserLastUpdate(@PathVariable("id") long userId) {
+	public ResponseEntity<ZonedDateTime> getUserLastUpdate(@PathVariable("id") long userId) {
 		try {
 			User user = this.webService.getUserById(userId);
 			if (user == null)
@@ -101,7 +103,6 @@ public class UserController {
 	@PostMapping("")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
 		try {
-			user.setLastUpdate(LocalDateTime.now());
 			User newUser = this.webService.createNewUser(user);
 			return new ResponseEntity<>(newUser, HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -109,8 +110,8 @@ public class UserController {
 		}
 	}
 
-	@PostMapping("/{id}")
-	public ResponseEntity<ToDoList> createList(@RequestParam("id") long userId, @RequestBody ToDoList toDoList) {
+	@PostMapping("/{id}/lists")
+	public ResponseEntity<ToDoList> createList(@PathVariable("id") long userId, @RequestBody ToDoList toDoList) {
 		try {
 			User user = this.webService.getUserById(userId);
 			if (user == null)
@@ -139,6 +140,41 @@ public class UserController {
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping("/{userId}/lists/{listId}")
+	public ResponseEntity<User> updateListByUser(@PathVariable("userId") long userId,
+			@PathVariable("listId") long listId, @RequestBody ToDoList listEdits) {
+		try {
+			User user = this.webService.getUserById(userId);
+			ToDoList toDoList = this.webService.getListById(listId);
+			if (user == null || toDoList == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				this.webService.updateList(toDoList, listEdits);
+				return new ResponseEntity<>(this.webService.getUserById(userId), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PutMapping("/{userId}/lists/{listId}/items/{itemId}")
+	public ResponseEntity<User> updateItemByUser(@PathVariable("userId") long userId, @PathVariable long listId,
+			@PathVariable long itemId, @RequestBody Item itemEdits) {
+		try {
+			User user = this.webService.getUserById(userId);
+			ToDoList toDoList = this.webService.getListById(listId);
+			Item item = this.webService.getItemById(itemId);
+			if (user == null || toDoList == null || item == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				this.webService.updateItem(item, itemEdits);
+				return new ResponseEntity<>(this.webService.getUserById(userId), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
