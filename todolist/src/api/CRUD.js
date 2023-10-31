@@ -21,7 +21,7 @@ export function getData(url) {
 
 	return new Promise((res, err) => {
 		axios.get(url).then((response) => {
-			console.log("response: ", response);
+			// console.log("response: ", response);
 			if (response.status >= 200 && response.status < 300)
 				res(response.data);
 			else err(response);
@@ -37,7 +37,7 @@ export function updateData(url, data) {
 		axios
 			.put(url, data, config)
 			.then((response) => {
-				console.log("response: ", response);
+				// console.log("response: ", response);
 				if (response.status >= 200 && response.status < 300)
 					res(response.data);
 				else err(response);

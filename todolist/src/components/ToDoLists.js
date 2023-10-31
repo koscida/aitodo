@@ -3,15 +3,17 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import { Card, CardContent, Button, Box } from "@mui/material";
 import { getData, parseISOLocal } from "../api/CRUD";
 
-const ToDoLists = () => {
-	const [toDoLists, setToDoLists] = useLocalStorage(
-		"aitodolist-ToDoLists-toDoLists",
-		null
-	);
-	const [serverLastUpdate, setServerLastUpdate] = useLocalStorage(
-		"aitodolist-ToDoLists-serverLastUpdate",
-		null
-	);
+const ToDoLists = ({ incomingServerLastUpdate }) => {
+	// const [toDoLists, setToDoLists] = useLocalStorage(
+	// 	"aitodolist-ToDoLists-toDoLists",
+	// 	null
+	// );
+	// const [serverLastUpdate, setServerLastUpdate] = useLocalStorage(
+	// 	"aitodolist-ToDoLists-serverLastUpdate",
+	// 	null
+	// );
+	const [toDoLists, setToDoLists] = useState(null);
+	const [serverLastUpdate, setServerLastUpdate] = useState(null);
 
 	const pullData = () => {
 		const promise = getData("users/1");
@@ -20,9 +22,9 @@ const ToDoLists = () => {
 				// console.log("value: ", value);
 
 				// update todo lists
-				const toDoLists = value["toDoLists"];
-				// console.log("toDoLists: ", toDoLists);
-				setToDoLists(toDoLists);
+				const newToDoLists = value["toDoLists"];
+				console.log("newToDoLists: ", newToDoLists);
+				setToDoLists(newToDoLists);
 
 				// update server update
 				const newLastUpdate = parseISOLocal(value["lastUpdate"]);
@@ -48,7 +50,7 @@ const ToDoLists = () => {
 				// check if out of date
 				if (serverLastUpdate < newServerLastUpdate) {
 					pullData();
-				}
+				} else console.log("toDoLists: ", toDoLists);
 			},
 			(error) => {
 				console.log("error: ", error);
@@ -58,11 +60,15 @@ const ToDoLists = () => {
 
 	useEffect(() => {
 		loadPage();
-	}, []);
+	}, [incomingServerLastUpdate]);
 
 	const loadPage = () => {
 		// begin, if either toDoLists or listUpdate null, pull both
-		if (toDoLists === null || serverLastUpdate === null) {
+		if (
+			toDoLists === null ||
+			serverLastUpdate === null ||
+			serverLastUpdate !== incomingServerLastUpdate
+		) {
 			pullData();
 		} else {
 			pullLastUpdate();

@@ -152,11 +152,11 @@ public class WebService {
 	public Item updateItem(Item updatingItem, Item itemEdits) {
 		ZonedDateTime now = ZonedDateTime.now();
 
-		ToDoList toDoList = this.getListById(updatingItem.getToDoList().getListId());
+		ToDoList toDoList = updatingItem.getToDoList();
 		toDoList.setLastUpdate(now);
 		this.updateList(toDoList, toDoList);
 
-		User user = getUserById(toDoList.getUser().getUserId());
+		User user = toDoList.getUser();
 		user.setLastUpdate(now);
 		this.updateUser(user, user);
 
@@ -166,8 +166,7 @@ public class WebService {
 			updatingItem.setItemDescription(itemEdits.getItemDescription());
 		if (itemEdits.getDueDate() != null)
 			updatingItem.setDueDate(itemEdits.getDueDate());
-		if (itemEdits.getIsComplete())
-			updatingItem.setIsComplete(itemEdits.getIsComplete());
+		updatingItem.setIsComplete(itemEdits.getIsComplete());
 
 		updatingItem.setLastUpdate(now);
 

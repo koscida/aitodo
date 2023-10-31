@@ -9,11 +9,13 @@ import ToDoLists from "../components/ToDoLists";
 export default function List() {
 	const { id } = useParams();
 
-	const [list, setList] = useLocalStorage(`aitodolist-List-${id}-list`, null);
-	const [serverLastUpdate, setServerLastUpdate] = useLocalStorage(
-		`aitodolist-List-${id}-serverLastUpdate`,
-		null
-	);
+	// const [list, setList] = useLocalStorage(`aitodolist-List-${id}-list`, null);
+	// const [serverLastUpdate, setServerLastUpdate] = useLocalStorage(
+	// 	`aitodolist-List-${id}-serverLastUpdate`,
+	// 	null
+	// );
+	const [list, setList] = useState(null);
+	const [serverLastUpdate, setServerLastUpdate] = useState(null);
 
 	const sortList = (list) =>
 		list
@@ -27,10 +29,10 @@ export default function List() {
 				// console.log("value: ", value);
 
 				// update lists
-				let list = value;
-				list.items = sortList(value.items);
-				// console.log("list: ", list);
-				setList(list);
+				let newList = value;
+				newList.items = sortList(value.items);
+				console.log("newList: ", newList);
+				setList(newList);
 
 				// update server update
 				const newLastUpdate = parseISOLocal(value["lastUpdate"]);
@@ -56,7 +58,7 @@ export default function List() {
 				// check if out of date
 				if (serverLastUpdate < newServerLastUpdate) {
 					pullData();
-				}
+				} else console.log("list: ", list);
 			},
 			(error) => {
 				console.log("error: ", error);
@@ -93,14 +95,14 @@ export default function List() {
 				// console.log("value: ", value);
 
 				// update lists
-				let list = value;
-				list.items = sortList(value.items);
-				console.log("list: ", list);
-				setList(list);
+				let newList = value;
+				newList.items = sortList(value.items);
+				console.log("newList: ", newList);
+				setList(newList);
 
 				// update server update
 				const newServerLastUpdate = parseISOLocal(value["lastUpdate"]);
-				console.log("newServerLastUpdate: ", newServerLastUpdate);
+				// console.log("newServerLastUpdate: ", newServerLastUpdate);
 				setServerLastUpdate(newServerLastUpdate);
 			},
 			(error) => {
@@ -110,13 +112,14 @@ export default function List() {
 	};
 
 	const handleCheck = (e) => {
-		console.log("e: ", e);
+		// console.log("e: ", e);
 		const {
 			target: { checked, id },
 		} = e;
-		console.log("id: ", id, ", checked: ", checked);
+		const itemId = Number(id);
+		console.log("itemId: ", itemId, ", checked: ", checked);
 
-		const itemUpdates = { itemId: id, isComplete: checked };
+		const itemUpdates = { itemId, isComplete: checked };
 
 		updateItem(id, itemUpdates);
 	};
@@ -133,39 +136,47 @@ export default function List() {
 				}}
 			>
 				<Box>
-					<ToDoLists />
+					<ToDoLists incomingServerLastUpdate={serverLastUpdate} />
 				</Box>
 				<Box>
-					{list ? (
-						<Stack spacing={1}>
-							<h2>{list.listName}</h2>
-							{list.items.map((item) => {
-								return (
-									<Item
-										key={item.itemId}
-										sx={{
-											display: "flex",
-											alignItems: "center",
-										}}
-									>
-										<Checkbox
-											onChange={handleCheck}
-											checked={item.isComplete}
-											id={item.itemId}
-										/>
-										<p>{item.itemDescription}</p>
-										{item.dueDate ? (
-											<p>{item.dueDate}</p>
-										) : (
-											<></>
-										)}
-									</Item>
-								);
-							})}
-						</Stack>
-					) : (
-						<></>
-					)}
+					<Box>
+						{list ? (
+							<Stack spacing={1}>
+								<h2>{list.listName}</h2>
+								{list.items.map((item) => {
+									return (
+										<Item
+											key={item.itemId}
+											sx={{
+												display: "flex",
+												alignItems: "center",
+											}}
+										>
+											<Checkbox
+												onChange={handleCheck}
+												checked={item.isComplete}
+												id={item.itemId.toString()}
+											/>
+											<p>{item.itemDescription}</p>
+											{item.dueDate ? (
+												<p>{item.dueDate}</p>
+											) : (
+												<></>
+											)}
+										</Item>
+									);
+								})}
+							</Stack>
+						) : (
+							<></>
+						)}
+					</Box>
+					<p>
+						serverLastUpdate:{" "}
+						{serverLastUpdate
+							? serverLastUpdate.toString()
+							: "NULL"}
+					</p>
 				</Box>
 			</Box>
 		</>
