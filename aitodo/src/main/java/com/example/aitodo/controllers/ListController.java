@@ -95,14 +95,23 @@ public class ListController {
 
 	// create a new list item
 	@PostMapping("/{id}/items")
-	public ResponseEntity<Item> createItem(@PathVariable("id") long listId, @RequestBody Item item) {
+	public ResponseEntity<ToDoList> createItem(@PathVariable("id") long listId, @RequestBody Item item) {
 		try {
 			ToDoList toDoList = this.webService.getListById(listId);
 			if (toDoList == null)
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			else {
+				// create item
 				Item newItem = this.webService.createNewItem(toDoList, item);
-				return new ResponseEntity<>(newItem, HttpStatus.CREATED);
+
+				// manually add to list
+				List<Item> items = toDoList.getItems();
+				items.add(newItem);
+				toDoList.setItems(items);
+
+				// return updated list
+				return new ResponseEntity<>(toDoList, HttpStatus.CREATED);
+
 			}
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

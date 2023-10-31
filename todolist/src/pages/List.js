@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { getData, parseISOLocal, updateData } from "../api/CRUD";
-import { Box, Checkbox, Paper, Stack } from "@mui/material";
+import { getData, parseISOLocal, updateData, createData } from "../api/CRUD";
+import { Box, Checkbox, Paper, Stack, Button, TextField } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ToDoLists from "../components/ToDoLists";
+import { NewReleases } from "@mui/icons-material";
 
 export default function List() {
 	const { id } = useParams();
@@ -16,59 +17,67 @@ export default function List() {
 	// );
 	const [list, setList] = useState(null);
 	const [serverLastUpdate, setServerLastUpdate] = useState(null);
-
-	const sortList = (list) =>
-		list
-			.sort((a, b) => a.itemOrder < b.itemOrder)
-			.sort((a, b) => a.isComplete > b.isComplete);
-
-	const pullData = () => {
-		const promise = getData(`lists/${id}`);
-		promise.then(
-			(value) => {
-				// console.log("value: ", value);
-
-				// update lists
-				let newList = value;
-				newList.items = sortList(value.items);
-				console.log("newList: ", newList);
-				setList(newList);
-
-				// update server update
-				const newLastUpdate = parseISOLocal(value["lastUpdate"]);
-				// console.log("newLastUpdate: ", newLastUpdate);
-				setServerLastUpdate(newLastUpdate);
-			},
-			(error) => {
-				console.log("error: ", error);
-			}
-		);
-	};
-
-	const pullLastUpdate = () => {
-		// get server time
-		const promise = getData(`lists/${id}/lastUpdate`);
-		promise.then(
-			(value) => {
-				// update server last update
-				const newServerLastUpdate = parseISOLocal(value);
-				// console.log("newServerLastUpdate: ", newServerLastUpdate);
-				setServerLastUpdate(newServerLastUpdate);
-
-				// check if out of date
-				if (serverLastUpdate < newServerLastUpdate) {
-					pullData();
-				} else console.log("list: ", list);
-			},
-			(error) => {
-				console.log("error: ", error);
-			}
-		);
-	};
+	const [isAddingItem, setIsAddingItem] = useState(false);
+	const [addingItemText, setAddingItemText] = useState("");
 
 	useEffect(() => {
 		loadPage();
 	}, []);
+
+	////
+	// data pulls
+
+	const pullLastUpdate = () => {
+		// get server time
+		const promise = getData(`lists/${id}/lastUpdate`);
+		promise.then((value) => {
+			// update server last update
+			const newServerLastUpdate = parseISOLocal(value);
+			// console.log("newServerLastUpdate: ", newServerLastUpdate);
+			setServerLastUpdate(newServerLastUpdate);
+
+			// check if out of date
+			if (serverLastUpdate < newServerLastUpdate) {
+				pullData();
+			}
+			// else console.log("list: ", list);
+		}, promiseErrFunc);
+	};
+
+	const pullData = () => {
+		const promise = getData(`lists/${id}`);
+		promise.then(processNewListFunc, promiseErrFunc);
+	};
+
+	const updateItem = (itemId, itemUpdates) => {
+		const promise = updateData(`lists/${id}/items/${itemId}`, itemUpdates);
+		promise.then(processNewListFunc, promiseErrFunc);
+	};
+
+	const addItem = (itemData) => {
+		const promise = createData(`lists/${id}/items`, itemData);
+		promise.then(processNewListFunc, promiseErrFunc);
+	};
+
+	const processNewListFunc = (value) => {
+		// console.log("value: ", value);
+
+		// update list
+		let newList = value;
+		newList.items = sortList(value.items);
+		// console.log("newList: ", newList);
+		setList(newList);
+
+		// update server update
+		updateServer(value["lastUpdate"]);
+	};
+
+	const promiseErrFunc = (error) => {
+		console.log("error: ", error);
+	};
+
+	////
+	// helpers
 
 	const loadPage = () => {
 		// begin, if either toDoLists or listUpdate null, pull both
@@ -79,39 +88,22 @@ export default function List() {
 		}
 	};
 
-	const Item = styled(Paper)(({ theme }) => ({
-		backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-		...theme.typography.body2,
-		padding: theme.spacing(1),
-		color: theme.palette.text.secondary,
-	}));
+	const updateServer = (value) => {
+		const newServerLastUpdate = parseISOLocal(value);
+		// console.log("newServerLastUpdate: ", newServerLastUpdate);
 
-	// handlers
-
-	const updateItem = (itemId, itemUpdates) => {
-		const promise = updateData(`lists/${id}/items/${itemId}`, itemUpdates);
-		promise.then(
-			(value) => {
-				// console.log("value: ", value);
-
-				// update lists
-				let newList = value;
-				newList.items = sortList(value.items);
-				console.log("newList: ", newList);
-				setList(newList);
-
-				// update server update
-				const newServerLastUpdate = parseISOLocal(value["lastUpdate"]);
-				// console.log("newServerLastUpdate: ", newServerLastUpdate);
-				setServerLastUpdate(newServerLastUpdate);
-			},
-			(error) => {
-				console.log("error: ", error);
-			}
-		);
+		setServerLastUpdate(newServerLastUpdate);
 	};
 
-	const handleCheck = (e) => {
+	const sortList = (list) =>
+		list
+			.sort((a, b) => a.itemOrder > b.itemOrder)
+			.sort((a, b) => a.isComplete > b.isComplete);
+
+	////
+	// handlers
+
+	const handleCheckItem = (e) => {
 		// console.log("e: ", e);
 		const {
 			target: { checked, id },
@@ -124,6 +116,38 @@ export default function List() {
 		updateItem(id, itemUpdates);
 	};
 
+	const handleShowAddItem = () => {
+		setIsAddingItem(true);
+	};
+	const handleCancelAddItem = () => {
+		setIsAddingItem(false);
+	};
+
+	const handleSaveAddItem = (e) => {
+		const itemOrder = list.items.length + 1;
+		const newItem = {
+			itemDescription: addingItemText,
+			isComplete: false,
+			itemOrder,
+		};
+
+		addItem(newItem);
+
+		// setIsAddingItem(false);
+		setAddingItemText("");
+	};
+
+	////
+	// components
+
+	const Item = styled(Paper)(({ theme }) => ({
+		backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+		...theme.typography.body2,
+		padding: theme.spacing(1),
+		color: theme.palette.text.secondary,
+	}));
+
+	////
 	// render
 
 	return (
@@ -139,10 +163,19 @@ export default function List() {
 					<ToDoLists incomingServerLastUpdate={serverLastUpdate} />
 				</Box>
 				<Box>
-					<Box>
-						{list ? (
-							<Stack spacing={1}>
+					{list ? (
+						<>
+							<Box
+								sx={{
+									display: "flex",
+									flexDirection: "row",
+									justifyContent: "space-between",
+									marginBottom: "1rem",
+								}}
+							>
 								<h2>{list.listName}</h2>
+							</Box>
+							<Stack spacing={1}>
 								{list.items.map((item) => {
 									return (
 										<Item
@@ -153,7 +186,7 @@ export default function List() {
 											}}
 										>
 											<Checkbox
-												onChange={handleCheck}
+												onChange={handleCheckItem}
 												checked={item.isComplete}
 												id={item.itemId.toString()}
 											/>
@@ -167,15 +200,72 @@ export default function List() {
 									);
 								})}
 							</Stack>
-						) : (
-							<></>
-						)}
-					</Box>
+							{isAddingItem ? (
+								<Paper
+									sx={{ padding: "1rem", margin: "1rem 0" }}
+								>
+									<div>
+										<TextField
+											id="newItem"
+											label="New Item"
+											value={addingItemText}
+											onChange={(e) =>
+												setAddingItemText(
+													e.target.value
+												)
+											}
+											variant="outlined"
+											sx={{ width: "100%" }}
+										/>
+									</div>
+									<Box
+										sx={{
+											display: "flex",
+											flexDirection: "row",
+											justifyContent: "space-between",
+											marginTop: "1rem",
+										}}
+									>
+										<Button
+											variant="outline"
+											onClick={handleCancelAddItem}
+										>
+											Cancel
+										</Button>
+										<Button
+											variant="contained"
+											onClick={handleSaveAddItem}
+										>
+											Save
+										</Button>
+									</Box>
+								</Paper>
+							) : (
+								<Box
+									sx={{
+										display: "flex",
+										flexDirection: "row",
+										justifyContent: "end",
+										marginTop: "1rem",
+									}}
+								>
+									<Button
+										variant="outlined"
+										onClick={handleShowAddItem}
+									>
+										New Item
+									</Button>
+								</Box>
+							)}
+						</>
+					) : (
+						<></>
+					)}
 					<p>
 						serverLastUpdate:{" "}
 						{serverLastUpdate
 							? serverLastUpdate.toString()
-							: "NULL"}
+							: "Loading..."}
 					</p>
 				</Box>
 			</Box>

@@ -48,48 +48,24 @@ export function updateData(url, data) {
 	});
 }
 
-// export function createData(url, data, resultFunc) {
-// 	console.log("CREATE data", data);
-// 	makeAxiosCall(url, axiosCREATE, resultFunc);
-// }
+export function createData(url, data) {
+	url = buildUrl(url);
+	console.log("CREATE data", url, data);
 
-// const makeAxiosCall = (url, axiosType, resultFunc) => {
-// 	let p = axiosType(url);
-// 	p.then(
-// 		(value) => {
-// 			console.log("value: ", value);
-// 			resultFunc(value);
-// 		},
-// 		(error) => {
-// 			console.log("error: ", error);
-// 		}
-// 	);
-// };
-
-// const axiosGET = (url) =>
-// 	new Promise((res, err) => {
-// 		axios.get(url).then((response) => {
-// 			console.log("response: ", response);
-// 			if (response.status >= 200 && response.status < 300)
-// 				res(response.data);
-// 			else err(response);
-// 		});
-// 	});
-
-// const axiosCREATE = (url) =>
-// 	new Promise((res, err) => {
-// 		axios
-// 			.post(url)
-// 			.then((response) => {
-// 				console.log("response: ", response);
-// 				if (response.status >= 200 && response.status < 300)
-// 					res(response.data);
-// 				else err(response);
-// 			})
-// 			.catch(function (error) {
-// 				console.log(error);
-// 			});
-// 	});
+	return new Promise((res, err) => {
+		axios
+			.post(url, data, config)
+			.then((response) => {
+				console.log("response: ", response);
+				if (response.status >= 200 && response.status < 300)
+					res(response.data);
+				else err(response);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	});
+}
 
 // export function deleteBook(url, bookId, deleteCallBack) {
 // 	console.log("DELETE bookId: ", bookId);

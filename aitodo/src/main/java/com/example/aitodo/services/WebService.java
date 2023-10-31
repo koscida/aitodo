@@ -56,7 +56,7 @@ public class WebService {
 		ZonedDateTime now = ZonedDateTime.now();
 		user.setLastUpdate(now);
 
-		return this.userRepository.save(user);
+		return this.userRepository.saveAndFlush(user);
 	}
 
 	public User updateUser(User userUpdating, User userEdits) {
@@ -67,7 +67,7 @@ public class WebService {
 		ZonedDateTime now = ZonedDateTime.now();
 		userUpdating.setLastUpdate(now);
 
-		return this.userRepository.save(userUpdating);
+		return this.userRepository.saveAndFlush(userUpdating);
 	}
 
 	public void deleteUser(User user) {
@@ -76,7 +76,7 @@ public class WebService {
 
 		user.setIsDeleted(true);
 
-		this.userRepository.save(user);
+		this.userRepository.saveAndFlush(user);
 	}
 
 	//
@@ -98,7 +98,7 @@ public class WebService {
 
 		toDoList.setUser(user);
 		toDoList.setLastUpdate(now);
-		return this.toDoListRepository.save(toDoList);
+		return this.toDoListRepository.saveAndFlush(toDoList);
 	}
 
 	public ToDoList updateList(ToDoList toDoListUpdating, ToDoList toDoListEdits) {
@@ -111,7 +111,7 @@ public class WebService {
 		toDoListUpdating.setListName(toDoListEdits.getListName());
 		toDoListUpdating.setIsComplete(toDoListEdits.getIsComplete());
 		toDoListUpdating.setLastUpdate(now);
-		return this.toDoListRepository.save(toDoListUpdating);
+		return this.toDoListRepository.saveAndFlush(toDoListUpdating);
 	}
 
 	public void deleteList(ToDoList list) {
@@ -120,7 +120,7 @@ public class WebService {
 
 		list.setIsDeleted(true);
 
-		this.toDoListRepository.save(list);
+		this.toDoListRepository.saveAndFlush(list);
 	}
 
 	//
@@ -146,7 +146,7 @@ public class WebService {
 
 		item.setToDoList(toDoList);
 		item.setLastUpdate(now);
-		return this.itemRepository.save(item);
+		return this.itemRepository.saveAndFlush(item);
 	}
 
 	public Item updateItem(Item updatingItem, Item itemEdits) {
@@ -170,7 +170,7 @@ public class WebService {
 
 		updatingItem.setLastUpdate(now);
 
-		return this.itemRepository.save(updatingItem);
+		return this.itemRepository.saveAndFlush(updatingItem);
 	}
 
 	public void deleteItem(Item item) {
@@ -179,7 +179,7 @@ public class WebService {
 
 		item.setIsDeleted(true);
 
-		this.itemRepository.save(item);
+		this.itemRepository.saveAndFlush(item);
 	}
 
 	// public List<Item> getListItems(long listId) {

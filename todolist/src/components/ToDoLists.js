@@ -126,7 +126,7 @@ const ToDoLists = ({ incomingServerLastUpdate }) => {
 			)}
 			<p>
 				serverLastUpdate:{" "}
-				{serverLastUpdate ? serverLastUpdate.toString() : "NULL"}
+				{serverLastUpdate ? serverLastUpdate.toString() : "Loading..."}
 			</p>
 		</>
 	);
