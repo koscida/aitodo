@@ -23,7 +23,7 @@ const ToDoLists = ({ incomingServerLastUpdate }) => {
 
 				// update todo lists
 				const newToDoLists = value["toDoLists"];
-				console.log("newToDoLists: ", newToDoLists);
+				// console.log("newToDoLists: ", newToDoLists);
 				setToDoLists(newToDoLists);
 
 				// update server update
@@ -50,7 +50,8 @@ const ToDoLists = ({ incomingServerLastUpdate }) => {
 				// check if out of date
 				if (serverLastUpdate < newServerLastUpdate) {
 					pullData();
-				} else console.log("toDoLists: ", toDoLists);
+				}
+				// else console.log("toDoLists: ", toDoLists);
 			},
 			(error) => {
 				console.log("error: ", error);

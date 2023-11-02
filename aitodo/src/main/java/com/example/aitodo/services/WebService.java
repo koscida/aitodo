@@ -144,6 +144,8 @@ public class WebService {
 		user.setLastUpdate(now);
 		this.updateUser(user, user);
 
+		if (item.getItemOrder() == 0)
+			item.setItemOrder(toDoList.getItems().size() + 1);
 		item.setToDoList(toDoList);
 		item.setLastUpdate(now);
 		return this.itemRepository.saveAndFlush(item);
