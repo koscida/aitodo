@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
-import { getData, parseISOLocal, updateData, createData } from "../api/CRUD";
+import {
+	getData,
+	parseISOLocal,
+	updateData,
+	createData,
+	deleteData,
+} from "../api/CRUD";
 import { Box, Checkbox, Paper, Stack, Button, TextField } from "@mui/material";
 import ToDoLists from "../components/ToDoLists";
 import { NewReleases } from "@mui/icons-material";
@@ -64,6 +70,11 @@ export default function List() {
 		promise.then(processNewListFunc, promiseErrFunc);
 	};
 
+	const deleteItem = (itemId) => {
+		const promise = deleteData(`lists/${id}/items/${itemId}`);
+		promise.then(processNewListFunc, promiseErrFunc);
+	};
+
 	const processNewListFunc = (value) => {
 		// console.log("value: ", value);
 
@@ -110,7 +121,7 @@ export default function List() {
 
 	////
 	// render
-	console.log("--render List--");
+	// console.log("--render List--");
 	return (
 		<Box
 			sx={{
@@ -141,6 +152,7 @@ export default function List() {
 									itemKey={item.itemId}
 									item={item}
 									updateItem={updateItem}
+									deleteItem={deleteItem}
 									key={`ListItem-${item.itemId}`}
 								/>
 							))}
@@ -154,12 +166,6 @@ export default function List() {
 				) : (
 					<></>
 				)}
-				<p>
-					serverLastUpdate:{" "}
-					{serverLastUpdate
-						? serverLastUpdate.toString()
-						: "Loading..."}
-				</p>
 			</Box>
 		</Box>
 	);

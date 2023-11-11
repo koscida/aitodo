@@ -33,7 +33,13 @@ const addingItemInit = {
 //	-1	new
 //	0	view
 //	1	edit
-export default function ListItem({ itemKey, item, updateItem, addItem }) {
+export default function ListItem({
+	itemKey,
+	item,
+	updateItem,
+	addItem,
+	deleteItem,
+}) {
 	const itemId = item ? item.itemId : 0;
 	const [itemState, setItemState] = useState(item ? 0 : -1);
 	const [itemUpdates, setItemUpdates] = useState(
@@ -42,12 +48,6 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 
 	const itemDescriptionRef = useRef();
 	const dueDateRef = useRef();
-
-	// effect
-	// useEffect(() => {
-	// 	itemDescriptionRef.current.focus();
-	// 	focusInput();
-	// }, [itemState]);
 
 	////
 	// handlers
@@ -77,7 +77,7 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 		// console.log("itemUpdates: ", itemUpdates);
 		updateItem(itemId, itemUpdates);
 	};
-
+	// updating item
 	const handleSaveItem = () => {
 		// date
 		const dueDateValue = dueDateRef.current.children[1].children[0].value;
@@ -96,7 +96,7 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 		if (itemState === 1) {
 			// save the item data
 			newItem.itemId = itemId;
-			console.log("itemId: ", itemId, "newItem: ", newItem);
+			// console.log("itemId: ", itemId, "newItem: ", newItem);
 			updateItem(itemId, newItem);
 
 			// close editing
@@ -106,7 +106,7 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 		else {
 			// save the item data
 			newItem.isComplete = false;
-			console.log("newItem: ", newItem);
+			// console.log("newItem: ", newItem);
 			addItem(newItem);
 
 			// reset the add item data
@@ -114,19 +114,10 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 		}
 	};
 
-	// handle change
-	// const handleChange = (e) => {
-	// 	setItemUpdates({
-	// 		...itemUpdates,
-	// 		itemDescription: e.target.value,
-	// 	});
-	// 	console.log("inputReference: ", inputReference);
-	// 	inputReference.current.focus();
-	// 	focusInput();
-	// };
-	// const focusInput = () => {
-	// 	inputReference.current.focus();
-	// };
+	// deleting item
+	const handleDeleteItem = () => {
+		deleteItem(itemId);
+	};
 
 	////
 	// components
@@ -139,9 +130,13 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 		color: theme.palette.text.secondary,
 	}));
 
+	const itemElementStyles = { marginLeft: "0.5rem" };
+
+	const dueDate =
+		item && item.dueDate ? dayjs(item.dueDate).format("MM/DD/YYYY") : null;
+
 	////
 	// render
-	console.log("--render ListItem--");
 	return (
 		<LocalizationProvider dateAdapter={AdapterDayjs}>
 			<Item
@@ -162,7 +157,7 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 						<Checkbox
 							onChange={handleCheckItem}
 							checked={item.isComplete}
-							disabled={itemState === 1}
+							disabled={itemState === 1 || item.isComplete}
 						/>
 					) : (
 						<></>
@@ -170,15 +165,22 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 
 					{/* Item Description */}
 					{itemState === 0 ? (
-						<p ref={itemDescriptionRef}>{item.itemDescription}</p>
+						<p
+							style={{
+								textDecoration: item.isComplete
+									? "line-through"
+									: "none",
+							}}
+							ref={itemDescriptionRef}
+						>
+							{item.itemDescription}
+						</p>
 					) : (
 						<TextField
 							key={`item-TextInput-${itemKey}`}
 							label={"Item Description"}
 							defaultValue={itemUpdates.itemDescription}
 							ref={itemDescriptionRef}
-							// value={itemUpdates.itemDescription}
-							// onChange={handleChange}
 						/>
 					)}
 				</Box>
@@ -190,29 +192,60 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 				>
 					{itemState === 0 ? (
 						<>
-							{/* Edit Button */}
-							{item.dueDate ? <p>{item.dueDate}</p> : <></>}
-							<Button
-								variant="outlined"
-								onClick={handleOpenItem}
-								value={itemId}
+							{/* Date */}
+							<p
+								style={{
+									...itemElementStyles,
+								}}
 							>
-								Edit
-							</Button>
+								{dueDate}
+							</p>
+
+							{/* Edit Button */}
+							{!item.isComplete ? (
+								<Button
+									variant="outlined"
+									onClick={handleOpenItem}
+									value={itemId}
+									sx={itemElementStyles}
+								>
+									Edit
+								</Button>
+							) : (
+								<></>
+							)}
+
+							{/* Delete Button */}
+							{item.isComplete ? (
+								<Button
+									variant="outlined"
+									color="error"
+									onClick={handleDeleteItem}
+									sx={itemElementStyles}
+								>
+									Delete
+								</Button>
+							) : (
+								<></>
+							)}
 						</>
 					) : (
 						<>
 							{/* Date Picker */}
 							<DatePicker
 								label="Due Date"
-								defaultValue={dayjs.tz(itemUpdates.dueDate)}
+								defaultValue={
+									dueDate ? dayjs.tz(dueDate) : null
+								}
 								ref={dueDateRef}
+								sx={itemElementStyles}
 							/>
 
 							{/* Cancel/Clear Button */}
 							<Button
 								variant="outline"
 								onClick={handleCancelItem}
+								sx={itemElementStyles}
 							>
 								{itemState === 1 ? "Cancel" : "Clear"}
 							</Button>
@@ -221,6 +254,7 @@ export default function ListItem({ itemKey, item, updateItem, addItem }) {
 							<Button
 								variant="contained"
 								onClick={handleSaveItem}
+								sx={itemElementStyles}
 							>
 								{itemState === 1 ? "Save" : "Add"}
 							</Button>

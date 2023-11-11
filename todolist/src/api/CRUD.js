@@ -17,7 +17,7 @@ const config = {
 
 export function getData(url) {
 	url = buildUrl(url);
-	console.log("GET data", url);
+	// console.log("GET data", url);
 
 	return new Promise((res, err) => {
 		axios.get(url).then((response) => {
@@ -31,7 +31,7 @@ export function getData(url) {
 
 export function updateData(url, data) {
 	url = buildUrl(url);
-	console.log("UPDATE data", url, data);
+	// console.log("UPDATE data", url, data);
 
 	return new Promise((res, err) => {
 		axios
@@ -50,7 +50,7 @@ export function updateData(url, data) {
 
 export function createData(url, data) {
 	url = buildUrl(url);
-	console.log("CREATE data", url, data);
+	// console.log("CREATE data", url, data);
 
 	return new Promise((res, err) => {
 		axios
@@ -67,17 +67,21 @@ export function createData(url, data) {
 	});
 }
 
-// export function deleteBook(url, bookId, deleteCallBack) {
-// 	console.log("DELETE bookId: ", bookId);
-// 	let p = new Promise((res, err) => {
-// 		axios
-// 			.delete(`${apiURL}/${resourceName}/${bookId}`)
-// 			.then((response) => {
-// 				console.log("response: ", response);
-// 				deleteCallBack();
-// 			})
-// 			.catch(function (error) {
-// 				console.log(error);
-// 			});
-// 	});
-// }
+export function deleteData(url) {
+	url = buildUrl(url);
+	console.log("DELETE: ", url);
+
+	return new Promise((res, err) => {
+		axios
+			.delete(url, config)
+			.then((response) => {
+				console.log("response: ", response);
+				if (response.status >= 200 && response.status < 300)
+					res(response.data);
+				else err(response);
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+	});
+}

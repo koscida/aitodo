@@ -35,19 +35,9 @@ public class ItemController {
 	// ////
 	// GET
 
-	@GetMapping("")
-	public ResponseEntity<List<Item>> getItems() {
-		try {
-			List<Item> items = this.webService.getAllItems();
-			if (items == null) {
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			} else {
-				return new ResponseEntity<>(items, HttpStatus.OK);
-			}
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@GetMapping("")
+	// remove get all, no use case
+
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Item> getItem(@PathVariable("id") long itemId) {
@@ -80,6 +70,7 @@ public class ItemController {
 	// ////
 	// POST
 
+	//	@PostMapping("")
 	// remove post mapping for single item, can only post an item to a list
 
 	// ////
@@ -104,18 +95,7 @@ public class ItemController {
 	// ////
 	// DELETE
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<HttpStatus> deleteItem(@PathVariable("id") long itemId) {
-		try {
-			Item item = this.webService.getItemById(itemId);
-			if (item == null)
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			else
-				return new ResponseEntity<>(HttpStatus.OK);
-
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+	// @DeleteMapping("/{id}")
+	// remove delete single item, must delete from a list
 
 }

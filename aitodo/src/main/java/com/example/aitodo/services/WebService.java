@@ -56,7 +56,7 @@ public class WebService {
 		ZonedDateTime now = ZonedDateTime.now();
 		user.setLastUpdate(now);
 
-		return this.userRepository.saveAndFlush(user);
+		return this.userRepository.save(user);
 	}
 
 	public User updateUser(User userUpdating, User userEdits) {
@@ -67,7 +67,7 @@ public class WebService {
 		ZonedDateTime now = ZonedDateTime.now();
 		userUpdating.setLastUpdate(now);
 
-		return this.userRepository.saveAndFlush(userUpdating);
+		return this.userRepository.save(userUpdating);
 	}
 
 	public void deleteUser(User user) {
@@ -76,7 +76,7 @@ public class WebService {
 
 		user.setIsDeleted(true);
 
-		this.userRepository.saveAndFlush(user);
+		this.userRepository.save(user);
 	}
 
 	//
@@ -87,7 +87,18 @@ public class WebService {
 	}
 
 	public ToDoList getListById(long listId) {
-		return this.toDoListRepository.findByListIdAndIsDeleted(listId, false);
+		ToDoList toDoList = this.toDoListRepository.findByListIdAndIsDeleted(listId, false);
+		List<Item> filteredItems = new ArrayList<>();
+
+		List<Item> items = toDoList.getItems();
+		for (Item item : items) {
+			if (!item.getIsDeleted())
+				filteredItems.add(item);
+		}
+
+		toDoList.setItems(filteredItems);
+
+		return toDoList;
 	}
 
 	public ToDoList createNewList(User user, ToDoList toDoList) {
@@ -98,7 +109,7 @@ public class WebService {
 
 		toDoList.setUser(user);
 		toDoList.setLastUpdate(now);
-		return this.toDoListRepository.saveAndFlush(toDoList);
+		return this.toDoListRepository.save(toDoList);
 	}
 
 	public ToDoList updateList(ToDoList toDoListUpdating, ToDoList toDoListEdits) {
@@ -108,10 +119,11 @@ public class WebService {
 		user.setLastUpdate(now);
 		this.updateUser(user, user);
 
+		toDoListUpdating.setLastUpdate(now);
 		toDoListUpdating.setListName(toDoListEdits.getListName());
 		toDoListUpdating.setIsComplete(toDoListEdits.getIsComplete());
-		toDoListUpdating.setLastUpdate(now);
-		return this.toDoListRepository.saveAndFlush(toDoListUpdating);
+
+		return this.toDoListRepository.save(toDoListUpdating);
 	}
 
 	public void deleteList(ToDoList list) {
@@ -120,7 +132,7 @@ public class WebService {
 
 		list.setIsDeleted(true);
 
-		this.toDoListRepository.saveAndFlush(list);
+		this.toDoListRepository.save(list);
 	}
 
 	//
@@ -137,18 +149,24 @@ public class WebService {
 	public Item createNewItem(ToDoList toDoList, Item item) {
 		ZonedDateTime now = ZonedDateTime.now();
 
+		// set time on list
 		toDoList.setLastUpdate(now);
-		this.updateList(toDoList, toDoList);
+		this.toDoListRepository.save(toDoList);
 
-		User user = this.getUserById(toDoList.getUser().getUserId());
-		user.setLastUpdate(now);
-		this.updateUser(user, user);
+		// // set time on user
+		// User user = this.getUserById(toDoList.getUser().getUserId());
+		// user.setLastUpdate(now);
+		// this.updateUser(user, user);
 
-		if (item.getItemOrder() == 0)
-			item.setItemOrder(toDoList.getItems().size() + 1);
-		item.setToDoList(toDoList);
-		item.setLastUpdate(now);
-		return this.itemRepository.saveAndFlush(item);
+		// // set data in item
+		// if (item.getItemOrder() == 0)
+		// item.setItemOrder(toDoList.getItems().size() + 1);
+		// item.setToDoList(toDoList);
+		// item.setLastUpdate(now);
+
+		// // save and return
+		// return this.itemRepository.save(item);
+		return item;
 	}
 
 	public Item updateItem(Item updatingItem, Item itemEdits) {
@@ -172,7 +190,7 @@ public class WebService {
 
 		updatingItem.setLastUpdate(now);
 
-		return this.itemRepository.saveAndFlush(updatingItem);
+		return this.itemRepository.save(updatingItem);
 	}
 
 	public void deleteItem(Item item) {
@@ -181,45 +199,7 @@ public class WebService {
 
 		item.setIsDeleted(true);
 
-		this.itemRepository.saveAndFlush(item);
+		this.itemRepository.save(item);
 	}
-
-	// public List<Item> getListItems(long listId) {
-	// return new ArrayList<>();
-	// // return this.itemRepository.findAllByListId(listId);
-	// }
-
-	// ////
-	// dto object
-
-	// public ListItem getListItem(long listId) {
-	// // get the list
-	// ToDoList toDoList = this.getListById(listId);
-
-	// // get the items
-	// List<Item> items = this.getListItems(listId);
-
-	// // create dto listitem
-	// ListItem listItem = new ListItem();
-	// listItem.setTodoList(toDoList);
-	// listItem.setItems(items);
-
-	// return listItem;
-	// }
-
-	// public List<ListItem> getUserListItems(int userId) {
-	// // get the lists
-	// List<ToDoList> toDoLists = this.getUserLists(userId);
-
-	// // create dto listitem
-	// List<ListItem> listItems = new ArrayList<>();
-
-	// for (ToDoList toDoList : toDoLists) {
-	// listItems.add(this.getListItem(toDoList.getListId()));
-	// }
-	// ;
-
-	// return listItems;
-	// }
 
 }

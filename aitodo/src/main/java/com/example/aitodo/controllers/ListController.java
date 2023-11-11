@@ -39,15 +39,8 @@ public class ListController {
 	// ////
 	// GET
 
-	@GetMapping("")
-	public ResponseEntity<List<ToDoList>> getLists() {
-		try {
-			List<ToDoList> toDoList = this.webService.getAllLists();
-			return new ResponseEntity<>(toDoList, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@GetMapping("")
+	// remove get all, no use case
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ToDoList> getList(@PathVariable("id") long listId) {
@@ -91,6 +84,7 @@ public class ListController {
 	// ////
 	// POST
 
+//	@PostMapping("")
 	// remove post mapping for single list, only add list to user
 
 	// create a new list item
@@ -105,15 +99,16 @@ public class ListController {
 				Item newItem = this.webService.createNewItem(toDoList, item);
 
 				// manually add to list
-				List<Item> items = toDoList.getItems();
-				items.add(newItem);
-				toDoList.setItems(items);
+				// List<Item> items = toDoList.getItems();
+				// items.add(newItem);
+				// toDoList.setItems(items);
 
 				// return updated list
 				return new ResponseEntity<>(toDoList, HttpStatus.CREATED);
 
 			}
 		} catch (Exception e) {
+			System.out.println(e);
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -177,6 +172,26 @@ public class ListController {
 		}
 	}
 
+	@DeleteMapping("/{listId}/items/{itemId}")
+	public ResponseEntity<ToDoList> deleteListItem(@PathVariable long listId, @PathVariable long itemId) {
+		try {
+			ToDoList toDoList = this.webService.getListById(listId);
+			Item item = this.webService.getItemById(itemId);
+
+			if (toDoList == null || item == null)
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			else {
+				this.webService.deleteItem(item);
+
+				ToDoList toDoListUpdated = this.webService.getListById(listId);
+				return new ResponseEntity<>(toDoListUpdated, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	// no delete all, there is pre-populated data in the database
+//	@DeleteMapping("")
 
 }
