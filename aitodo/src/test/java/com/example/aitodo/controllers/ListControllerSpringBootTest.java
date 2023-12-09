@@ -17,6 +17,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static org.assertj.core.api.Assertions.*;
+
 import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -72,14 +74,14 @@ class ListControllerSpringBootTest {
 
 		// when
 		ResponseEntity<ToDoList> response = restTemplate.getForEntity("/api/lists/1", ToDoList.class);
-		System.out.println(response);
+//		System.out.println(response);
 
-		System.out.println(mockToDoList);
+//		System.out.println(mockToDoList);
 
 
 		// then
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertSame(mockToDoList, response.getBody());
+		assertThat(response.getBody()).usingRecursiveComparison().isEqualTo(mockToDoList);
 	}
 
 	@Test

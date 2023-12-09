@@ -91,7 +91,7 @@ public class ListController {
 	@PostMapping("/{id}/items")
 	public ResponseEntity<ToDoList> createItem(@PathVariable("id") long listId, @RequestBody Item item) {
 		try {
-			ToDoList toDoList = this.webService.getListById(listId);
+			ToDoList toDoList = this.webService.getRawListById(listId);
 			if (toDoList == null)
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 			else {
@@ -99,9 +99,9 @@ public class ListController {
 				Item newItem = this.webService.createNewItem(toDoList, item);
 
 				// manually add to list
-				// List<Item> items = toDoList.getItems();
-				// items.add(newItem);
-				// toDoList.setItems(items);
+				 List<Item> items = toDoList.getItems();
+				 items.add(newItem);
+				 toDoList.setItems(items);
 
 				// return updated list
 				return new ResponseEntity<>(toDoList, HttpStatus.CREATED);
@@ -175,7 +175,7 @@ public class ListController {
 	@DeleteMapping("/{listId}/items/{itemId}")
 	public ResponseEntity<ToDoList> deleteListItem(@PathVariable long listId, @PathVariable long itemId) {
 		try {
-			ToDoList toDoList = this.webService.getListById(listId);
+			ToDoList toDoList = this.webService.getRawListById(listId);
 			Item item = this.webService.getItemById(itemId);
 
 			if (toDoList == null || item == null)

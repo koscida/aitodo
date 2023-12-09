@@ -101,6 +101,11 @@ public class WebService {
 		return toDoList;
 	}
 
+	public ToDoList getRawListById(long listId) {
+		ToDoList toDoList = this.toDoListRepository.findByListIdAndIsDeleted(listId, false);
+		return toDoList;
+	}
+
 	public ToDoList createNewList(User user, ToDoList toDoList) {
 		ZonedDateTime now = ZonedDateTime.now();
 
@@ -153,20 +158,19 @@ public class WebService {
 		toDoList.setLastUpdate(now);
 		this.toDoListRepository.save(toDoList);
 
-		// // set time on user
-		// User user = this.getUserById(toDoList.getUser().getUserId());
-		// user.setLastUpdate(now);
-		// this.updateUser(user, user);
+		 // set time on user
+		 User user = this.getUserById(toDoList.getUser().getUserId());
+		 user.setLastUpdate(now);
+		 this.updateUser(user, user);
 
-		// // set data in item
-		// if (item.getItemOrder() == 0)
-		// item.setItemOrder(toDoList.getItems().size() + 1);
-		// item.setToDoList(toDoList);
-		// item.setLastUpdate(now);
+		 // set data in item
+		 if (item.getItemOrder() == 0)
+		 item.setItemOrder(toDoList.getItems().size() + 1);
+		 item.setToDoList(toDoList);
+		 item.setLastUpdate(now);
 
-		// // save and return
-		// return this.itemRepository.save(item);
-		return item;
+		 // save and return
+		 return this.itemRepository.save(item);
 	}
 
 	public Item updateItem(Item updatingItem, Item itemEdits) {
